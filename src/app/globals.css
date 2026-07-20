@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --mirage-blue: #0b2a8f;
-  --mirage-blue-deep: #061a5c;
-  --mirage-blue-soft: #1436a8;
-  --mirage-gold: #e0b12a;
-  --mirage-gold-soft: #f0c94a;
-  --mirage-white: #f7f8fc;
-  --mirage-ink: #0a0a0a;
-  --mirage-muted: #9aa3b8;
+  --brand-blue: #0b2a8f;
+  --brand-blue-deep: #061a5c;
+  --brand-blue-soft: #1436a8;
+  --brand-gold: #e0b12a;
+  --brand-gold-soft: #f0c94a;
+  --brand-white: #f7f8fc;
+  --brand-ink: #0a0a0a;
+  --brand-muted: #9aa3b8;
   --background: #050914;
   --foreground: #f7f8fc;
 }
@@ -16,14 +16,14 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-mirage-blue: var(--mirage-blue);
-  --color-mirage-blue-deep: var(--mirage-blue-deep);
-  --color-mirage-blue-soft: var(--mirage-blue-soft);
-  --color-mirage-gold: var(--mirage-gold);
-  --color-mirage-gold-soft: var(--mirage-gold-soft);
-  --color-mirage-white: var(--mirage-white);
-  --color-mirage-ink: var(--mirage-ink);
-  --color-mirage-muted: var(--mirage-muted);
+  --color-brand-blue: var(--brand-blue);
+  --color-brand-blue-deep: var(--brand-blue-deep);
+  --color-brand-blue-soft: var(--brand-blue-soft);
+  --color-brand-gold: var(--brand-gold);
+  --color-brand-gold-soft: var(--brand-gold-soft);
+  --color-brand-white: var(--brand-white);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-muted: var(--brand-muted);
   --font-sans: var(--font-body);
   --font-display: var(--font-display);
 }
@@ -44,8 +44,8 @@ body {
 }
 
 ::selection {
-  background: color-mix(in srgb, var(--mirage-gold) 45%, transparent);
-  color: var(--mirage-ink);
+  background: color-mix(in srgb, var(--brand-gold) 45%, transparent);
+  color: var(--brand-ink);
 }
 
 @keyframes fade-up {

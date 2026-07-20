@@ -17,7 +17,7 @@ export default async function AgendarPage({
       <SiteHeader solid />
       <main className="flex-1 bg-[radial-gradient(ellipse_at_top,_#0b2a8f_0%,_#050914_55%)]">
         <div className="mx-auto max-w-3xl px-5 py-12 sm:py-16">
-          <p className="text-xs uppercase tracking-[0.28em] text-mirage-gold">
+          <p className="text-xs uppercase tracking-[0.28em] text-brand-gold">
             Agendamento online
           </p>
           <h1 className="font-display mt-3 text-5xl text-white sm:text-6xl">

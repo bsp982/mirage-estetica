@@ -99,7 +99,7 @@ export function ManagerAgenda() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-xs uppercase tracking-[0.22em] text-mirage-gold">
+          <p className="text-xs uppercase tracking-[0.22em] text-brand-gold">
             Painel do gestor
           </p>
           <h1 className="font-display mt-1 text-4xl text-white">Agenda</h1>
@@ -140,7 +140,7 @@ export function ManagerAgenda() {
           />
 
           <section className="rounded-[1.75rem] border border-white/10 bg-black/25 p-5">
-            <p className="text-xs uppercase tracking-[0.18em] text-mirage-gold">
+            <p className="text-xs uppercase tracking-[0.18em] text-brand-gold">
               Dia selecionado
             </p>
             <h2 className="mt-2 capitalize text-xl font-semibold text-white">
@@ -178,7 +178,7 @@ export function ManagerAgenda() {
                         <p className="text-xl font-semibold text-white">
                           {item.time}
                         </p>
-                        <p className="text-sm text-mirage-gold">
+                        <p className="text-sm text-brand-gold">
                           {item.serviceName}
                         </p>
                       </div>

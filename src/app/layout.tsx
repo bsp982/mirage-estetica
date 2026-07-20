@@ -14,9 +14,9 @@ const body = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "Mirage Estética Automotiva | Agende online",
+  title: "Estética MVP | Agendamento online",
   description:
-    "Seu carro foi feito para brilhar. Agende lavagem detalhada, higienização, polimento, vitrificação e insulfilm em Uberlândia-MG.",
+    "Demonstração do sistema de agendamento para estéticas automotivas: serviços, pacotes, horários e painel do gestor.",
 };
 
 export default function RootLayout({

@@ -5,20 +5,20 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
   return (
     <header
       className={`sticky top-0 z-40 border-b border-white/10 backdrop-blur-md ${
-        solid ? "bg-mirage-blue-deep/95" : "bg-[#050914]/75"
+        solid ? "bg-brand-blue-deep/95" : "bg-[#050914]/75"
       }`}
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-4">
         <Link href="/" className="group flex items-center gap-3">
-          <span className="grid h-9 w-9 place-items-center rounded-full border border-mirage-gold/50 bg-mirage-blue text-[10px] font-bold text-mirage-gold">
-            M
+          <span className="grid h-9 w-9 place-items-center rounded-full border border-brand-gold/50 bg-brand-blue text-[10px] font-bold text-brand-gold">
+            {BUSINESS.mark}
           </span>
           <span className="leading-tight">
-            <span className="font-display block text-lg text-mirage-gold group-hover:text-mirage-gold-soft">
-              MIRAGE
+            <span className="font-display block text-lg text-brand-gold group-hover:text-brand-gold-soft">
+              {BUSINESS.shortName}
             </span>
             <span className="block text-[10px] uppercase tracking-[0.22em] text-white/70">
-              Estética Automotiva
+              Demo de agendamento
             </span>
           </span>
         </Link>
@@ -32,7 +32,7 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
           </Link>
           <Link
             href="/agendar"
-            className="rounded-full bg-mirage-gold px-4 py-2 text-sm font-semibold text-mirage-ink transition hover:bg-mirage-gold-soft"
+            className="rounded-full bg-brand-gold px-4 py-2 text-sm font-semibold text-brand-ink transition hover:bg-brand-gold-soft"
           >
             Agendar
           </Link>

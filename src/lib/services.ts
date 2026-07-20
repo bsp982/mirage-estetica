@@ -1,16 +1,18 @@
 import type { Service } from "./types";
 
 export const BUSINESS = {
-  name: "Mirage Estética Automotiva",
-  handle: "@mirage_estetica_automotiva",
+  name: "Estética MVP",
+  shortName: "ESTÉTICA MVP",
+  mark: "EM",
+  handle: "@sua_estetica",
   motto: "Seu carro foi feito para brilhar",
-  city: "Uberlândia-MG",
-  phone: "(34) 99252-9160",
-  phoneHref: "tel:+5534992529160",
-  whatsappHref: "https://wa.me/5534992529160",
-  instagramHref: "https://www.instagram.com/mirage_estetica_automotiva/",
+  city: "Demonstração",
+  phone: "(00) 00000-0000",
+  phoneHref: "tel:+5500000000000",
+  whatsappHref: "https://wa.me/5500000000000",
+  instagramHref: "https://www.instagram.com/",
   hoursLabel: "Seg a Sáb · 08h às 18h",
-  addressHint: "Atendimento apenas com agendamento",
+  addressHint: "Atendimento apenas com agendamento · dados de demonstração",
 };
 
 /** Horários base (slots de 1h). Serviços longos ocupam N slots. */

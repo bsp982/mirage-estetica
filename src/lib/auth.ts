@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 
-const COOKIE_NAME = "mirage_gestor";
+const COOKIE_NAME = "estetica_mvp_gestor";
 const COOKIE_VALUE = "ok";
 
 const ADMIN_USER = "admin";

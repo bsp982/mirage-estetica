@@ -134,13 +134,13 @@ export function BookingWizard({
 
   if (step === 5) {
     return (
-      <div className="rounded-3xl border border-mirage-gold/30 bg-mirage-blue-deep/60 p-8 text-center">
-        <p className="text-xs uppercase tracking-[0.25em] text-mirage-gold">
+      <div className="rounded-3xl border border-brand-gold/30 bg-brand-blue-deep/60 p-8 text-center">
+        <p className="text-xs uppercase tracking-[0.25em] text-brand-gold">
           Agendamento confirmado
         </p>
         <h2 className="font-display mt-3 text-4xl text-white">Tudo certo!</h2>
         <p className="mx-auto mt-4 max-w-md text-white/75">
-          Seu horário na Mirage está reservado. Chegue no horário marcado e
+          Seu horário está reservado. Chegue no horário marcado e
           deixe o resto com a gente.
         </p>
         <div className="mx-auto mt-6 max-w-sm rounded-2xl border border-white/10 bg-black/20 p-4 text-left text-sm text-white/80">
@@ -156,7 +156,7 @@ export function BookingWizard({
         </div>
         <Link
           href="/"
-          className="mt-8 inline-flex rounded-full bg-mirage-gold px-6 py-3 font-semibold text-mirage-ink"
+          className="mt-8 inline-flex rounded-full bg-brand-gold px-6 py-3 font-semibold text-brand-ink"
         >
           Voltar ao início
         </Link>
@@ -174,7 +174,7 @@ export function BookingWizard({
             onClick={() => s.n < step && setStep(s.n)}
             className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${
               step === s.n
-                ? "bg-mirage-gold text-mirage-ink"
+                ? "bg-brand-gold text-brand-ink"
                 : step > s.n
                   ? "bg-white/10 text-white"
                   : "bg-white/5 text-white/40"
@@ -196,11 +196,11 @@ export function BookingWizard({
                 onClick={() => setServiceId(item.id)}
                 className={`rounded-3xl border p-5 text-left transition ${
                   active
-                    ? "border-mirage-gold bg-mirage-blue/50"
+                    ? "border-brand-gold bg-brand-blue/50"
                     : "border-white/10 bg-white/5 hover:border-white/25"
                 }`}
               >
-                <p className="text-xs uppercase tracking-[0.2em] text-mirage-gold">
+                <p className="text-xs uppercase tracking-[0.2em] text-brand-gold">
                   a partir de {formatBRL(item.priceFrom)}
                 </p>
                 <h3 className="mt-2 text-xl font-semibold text-white">
@@ -230,7 +230,7 @@ export function BookingWizard({
                   key={pkg.id}
                   className={`flex cursor-pointer items-start gap-3 rounded-2xl border p-4 ${
                     checked
-                      ? "border-mirage-gold/60 bg-mirage-blue/40"
+                      ? "border-brand-gold/60 bg-brand-blue/40"
                       : "border-white/10 bg-white/5"
                   }`}
                 >
@@ -244,7 +244,7 @@ export function BookingWizard({
                     <span className="flex items-center gap-2">
                       <span className="font-medium text-white">{pkg.name}</span>
                       {pkg.included && (
-                        <span className="rounded-full bg-mirage-gold/20 px-2 py-0.5 text-[10px] uppercase tracking-wider text-mirage-gold">
+                        <span className="rounded-full bg-brand-gold/20 px-2 py-0.5 text-[10px] uppercase tracking-wider text-brand-gold">
                           Incluso
                         </span>
                       )}
@@ -269,7 +269,7 @@ export function BookingWizard({
               min={todayISO()}
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 text-white outline-none focus:border-mirage-gold"
+              className="w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 text-white outline-none focus:border-brand-gold"
             />
           </div>
           {closed ? (
@@ -301,7 +301,7 @@ export function BookingWizard({
                           isOccupied
                             ? "cursor-not-allowed bg-white/5 text-white/25 line-through"
                             : selected
-                              ? "bg-mirage-gold text-mirage-ink"
+                              ? "bg-brand-gold text-brand-ink"
                               : "bg-white/10 text-white hover:bg-white/15"
                         }`}
                       >
@@ -329,7 +329,7 @@ export function BookingWizard({
             <input
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
-              className="w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 text-white outline-none focus:border-mirage-gold"
+              className="w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 text-white outline-none focus:border-brand-gold"
               placeholder="Nome completo"
             />
           </div>
@@ -340,7 +340,7 @@ export function BookingWizard({
             <input
               value={customerPhone}
               onChange={(e) => setCustomerPhone(e.target.value)}
-              className="w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 text-white outline-none focus:border-mirage-gold"
+              className="w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 text-white outline-none focus:border-brand-gold"
               placeholder="(34) 9xxxx-xxxx"
             />
           </div>
@@ -351,7 +351,7 @@ export function BookingWizard({
             <input
               value={customerCar}
               onChange={(e) => setCustomerCar(e.target.value)}
-              className="w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 text-white outline-none focus:border-mirage-gold"
+              className="w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 text-white outline-none focus:border-brand-gold"
               placeholder="Ex: Civic 2020 branco"
             />
           </div>
@@ -363,7 +363,7 @@ export function BookingWizard({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={3}
-              className="w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 text-white outline-none focus:border-mirage-gold"
+              className="w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 text-white outline-none focus:border-brand-gold"
               placeholder="Algum detalhe importante?"
             />
           </div>
@@ -413,7 +413,7 @@ export function BookingWizard({
               setError("");
               setStep((s) => (s + 1) as Step);
             }}
-            className="rounded-full bg-mirage-gold px-6 py-2.5 text-sm font-semibold text-mirage-ink"
+            className="rounded-full bg-brand-gold px-6 py-2.5 text-sm font-semibold text-brand-ink"
           >
             Continuar
           </button>
@@ -422,7 +422,7 @@ export function BookingWizard({
             type="button"
             disabled={submitting}
             onClick={() => void submit()}
-            className="rounded-full bg-mirage-gold px-6 py-2.5 text-sm font-semibold text-mirage-ink disabled:opacity-60"
+            className="rounded-full bg-brand-gold px-6 py-2.5 text-sm font-semibold text-brand-ink disabled:opacity-60"
           >
             {submitting ? "Confirmando…" : "Confirmar agendamento"}
           </button>

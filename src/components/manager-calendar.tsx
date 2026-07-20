@@ -75,7 +75,7 @@ export function ManagerCalendar({
             type="button"
             onClick={onPrevMonth}
             aria-label="Mês anterior"
-            className="grid h-9 w-9 place-items-center rounded-full border border-white/15 text-white/80 hover:border-mirage-gold/50 hover:text-mirage-gold"
+            className="grid h-9 w-9 place-items-center rounded-full border border-white/15 text-white/80 hover:border-brand-gold/50 hover:text-brand-gold"
           >
             ‹
           </button>
@@ -83,7 +83,7 @@ export function ManagerCalendar({
             type="button"
             onClick={onNextMonth}
             aria-label="Próximo mês"
-            className="grid h-9 w-9 place-items-center rounded-full border border-white/15 text-white/80 hover:border-mirage-gold/50 hover:text-mirage-gold"
+            className="grid h-9 w-9 place-items-center rounded-full border border-white/15 text-white/80 hover:border-brand-gold/50 hover:text-brand-gold"
           >
             ›
           </button>
@@ -117,26 +117,26 @@ export function ManagerCalendar({
               onClick={() => onSelectDate(cell.iso!)}
               className={`relative flex min-h-14 flex-col items-start rounded-xl border p-1.5 text-left transition sm:min-h-16 sm:p-2 ${
                 isSelected
-                  ? "border-mirage-gold bg-mirage-blue/60"
+                  ? "border-brand-gold bg-brand-blue/60"
                   : count > 0
-                    ? "border-mirage-gold/25 bg-mirage-blue/25 hover:border-mirage-gold/50"
+                    ? "border-brand-gold/25 bg-brand-blue/25 hover:border-brand-gold/50"
                     : "border-white/8 bg-white/[0.03] hover:border-white/20"
               } ${isSunday ? "opacity-55" : ""}`}
             >
               <span
                 className={`text-sm font-semibold ${
-                  isToday ? "text-mirage-gold" : "text-white"
+                  isToday ? "text-brand-gold" : "text-white"
                 }`}
               >
                 {cell.day}
               </span>
               {count > 0 && (
-                <span className="mt-auto rounded-full bg-mirage-gold/20 px-1.5 py-0.5 text-[10px] font-medium text-mirage-gold">
+                <span className="mt-auto rounded-full bg-brand-gold/20 px-1.5 py-0.5 text-[10px] font-medium text-brand-gold">
                   {count} {count === 1 ? "agend." : "agend."}
                 </span>
               )}
               {isToday && !isSelected && (
-                <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-mirage-gold" />
+                <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-brand-gold" />
               )}
             </button>
           );
@@ -145,11 +145,11 @@ export function ManagerCalendar({
 
       <div className="mt-4 flex flex-wrap gap-4 text-xs text-white/45">
         <span className="flex items-center gap-2">
-          <span className="h-2.5 w-2.5 rounded-sm bg-mirage-blue/60 ring-1 ring-mirage-gold/40" />
+          <span className="h-2.5 w-2.5 rounded-sm bg-brand-blue/60 ring-1 ring-brand-gold/40" />
           Com agendamentos
         </span>
         <span className="flex items-center gap-2">
-          <span className="h-2.5 w-2.5 rounded-sm bg-mirage-gold" />
+          <span className="h-2.5 w-2.5 rounded-sm bg-brand-gold" />
           Dia selecionado / hoje
         </span>
       </div>

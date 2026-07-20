@@ -40,10 +40,12 @@ export default function GestorLoginPage() {
         <Link href="/" className="text-xs text-white/50 hover:text-white">
           ← Voltar ao site
         </Link>
-        <p className="mt-6 text-xs uppercase tracking-[0.25em] text-mirage-gold">
+        <p className="mt-6 text-xs uppercase tracking-[0.25em] text-brand-gold">
           Área restrita
         </p>
-        <h1 className="font-display mt-2 text-4xl text-white">Gestor Mirage</h1>
+        <h1 className="font-display mt-2 text-4xl text-white">
+          Gestor · Estética MVP
+        </h1>
         <p className="mt-2 text-sm text-white/60">
           Acesse para ver a agenda e os agendamentos do dia.
         </p>
@@ -54,7 +56,7 @@ export default function GestorLoginPage() {
             <input
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full rounded-xl border border-white/15 bg-black/40 px-4 py-3 text-white outline-none focus:border-mirage-gold"
+              className="w-full rounded-xl border border-white/15 bg-black/40 px-4 py-3 text-white outline-none focus:border-brand-gold"
               autoComplete="username"
             />
           </div>
@@ -64,7 +66,7 @@ export default function GestorLoginPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-xl border border-white/15 bg-black/40 px-4 py-3 text-white outline-none focus:border-mirage-gold"
+              className="w-full rounded-xl border border-white/15 bg-black/40 px-4 py-3 text-white outline-none focus:border-brand-gold"
               autoComplete="current-password"
               placeholder="••••••"
             />
@@ -77,7 +79,7 @@ export default function GestorLoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-full bg-mirage-gold py-3 font-semibold text-mirage-ink disabled:opacity-60"
+            className="w-full rounded-full bg-brand-gold py-3 font-semibold text-brand-ink disabled:opacity-60"
           >
             {loading ? "Entrando…" : "Entrar"}
           </button>

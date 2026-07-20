@@ -18,7 +18,7 @@ export default function HomePage() {
             }}
           />
           <div
-            className="hero-glow pointer-events-none absolute -right-20 top-10 h-72 w-72 rounded-full bg-mirage-gold/20 blur-3xl"
+            className="hero-glow pointer-events-none absolute -right-20 top-10 h-72 w-72 rounded-full bg-brand-gold/20 blur-3xl"
             aria-hidden
           />
           <div
@@ -32,16 +32,16 @@ export default function HomePage() {
           />
 
           <div className="relative mx-auto flex min-h-[88vh] max-w-6xl flex-col justify-end px-5 pb-16 pt-24 sm:justify-center sm:pb-24">
-            <p className="animate-fade-up text-xs uppercase tracking-[0.35em] text-mirage-gold">
+            <p className="animate-fade-up text-xs uppercase tracking-[0.35em] text-brand-gold">
               {BUSINESS.city} · Detailer profissional
             </p>
             <h1 className="animate-fade-up-delay font-display mt-4 max-w-4xl text-6xl leading-[0.92] text-white sm:text-8xl">
-              MIRAGE
-              <span className="mt-2 block text-3xl tracking-[0.12em] text-mirage-gold sm:text-4xl">
-                ESTÉTICA AUTOMOTIVA
+              ESTÉTICA
+              <span className="mt-2 block text-3xl tracking-[0.12em] text-brand-gold sm:text-4xl">
+                MVP
               </span>
             </h1>
-            <div className="animate-line mt-5 h-[3px] w-28 bg-mirage-gold" />
+            <div className="animate-line mt-5 h-[3px] w-28 bg-brand-gold" />
             <p className="animate-fade-up-delay-2 mt-6 max-w-xl text-lg text-white/80 sm:text-xl">
               {BUSINESS.motto}. Agende seu horário pelo site — escolha o
               serviço, o pacote e o melhor horário, sem espera no WhatsApp.
@@ -49,7 +49,7 @@ export default function HomePage() {
             <div className="animate-fade-up-delay-2 mt-8 flex flex-wrap gap-3">
               <Link
                 href="/agendar"
-                className="rounded-full bg-mirage-gold px-7 py-3.5 text-sm font-bold uppercase tracking-wide text-mirage-ink transition hover:bg-mirage-gold-soft"
+                className="rounded-full bg-brand-gold px-7 py-3.5 text-sm font-bold uppercase tracking-wide text-brand-ink transition hover:bg-brand-gold-soft"
               >
                 Agendar agora
               </Link>
@@ -63,7 +63,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="border-y border-white/10 bg-mirage-blue-deep/40">
+        <section className="border-y border-white/10 bg-brand-blue-deep/40">
           <div className="mx-auto grid max-w-6xl gap-6 px-5 py-10 sm:grid-cols-3">
             {[
               {
@@ -80,7 +80,7 @@ export default function HomePage() {
               },
             ].map((item) => (
               <div key={item.title}>
-                <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-mirage-gold">
+                <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-brand-gold">
                   {item.title}
                 </h2>
                 <p className="mt-2 text-white/70">{item.text}</p>
@@ -90,8 +90,8 @@ export default function HomePage() {
         </section>
 
         <section id="servicos" className="mx-auto max-w-6xl px-5 py-20">
-          <p className="text-xs uppercase tracking-[0.28em] text-mirage-gold">
-            Serviços Mirage
+          <p className="text-xs uppercase tracking-[0.28em] text-brand-gold">
+            Serviços da demonstração
           </p>
           <h2 className="font-display mt-3 text-5xl text-white sm:text-6xl">
             Escolha o cuidado certo
@@ -105,9 +105,9 @@ export default function HomePage() {
             {SERVICES.map((service) => (
               <article
                 key={service.id}
-                className="group relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-gradient-to-br from-mirage-blue/40 to-transparent p-7 transition hover:border-mirage-gold/40"
+                className="group relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-gradient-to-br from-brand-blue/40 to-transparent p-7 transition hover:border-brand-gold/40"
               >
-                <p className="text-xs uppercase tracking-[0.2em] text-mirage-gold">
+                <p className="text-xs uppercase tracking-[0.2em] text-brand-gold">
                   a partir de {formatBRL(service.priceFrom)} ·{" "}
                   {service.durationHours}h
                 </p>
@@ -123,14 +123,14 @@ export default function HomePage() {
                         key={pkg.id}
                         className="flex items-start gap-2 text-sm text-white/75"
                       >
-                        <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-mirage-gold" />
+                        <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-gold" />
                         {pkg.name}
                       </li>
                     ))}
                 </ul>
                 <Link
                   href={`/agendar?servico=${service.id}`}
-                  className="mt-7 inline-flex text-sm font-semibold text-mirage-gold transition group-hover:text-mirage-gold-soft"
+                  className="mt-7 inline-flex text-sm font-semibold text-brand-gold transition group-hover:text-brand-gold-soft"
                 >
                   Agendar este serviço →
                 </Link>
@@ -153,13 +153,13 @@ export default function HomePage() {
                 Pronto para brilhar?
               </h2>
               <p className="mt-3 max-w-lg text-white/75">
-                Reserve em minutos pelo site. A equipe Mirage prepara tudo para
-                o seu veículo.
+                Reserve em minutos pelo site. Na estética real do seu cliente,
+                a equipe prepara tudo para o veículo.
               </p>
             </div>
             <Link
               href="/agendar"
-              className="rounded-full bg-mirage-gold px-8 py-4 text-sm font-bold uppercase tracking-wide text-mirage-ink hover:bg-mirage-gold-soft"
+              className="rounded-full bg-brand-gold px-8 py-4 text-sm font-bold uppercase tracking-wide text-brand-ink hover:bg-brand-gold-soft"
             >
               Ir para agendamento
             </Link>
