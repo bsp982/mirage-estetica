@@ -1,0 +1,17 @@
+[
+  {
+    "id": "apt_mrtliwlf_il2uk",
+    "serviceId": "lavagem-detalhada",
+    "packageIds": [
+      "lav-ext",
+      "lav-int"
+    ],
+    "date": "2026-07-21",
+    "time": "10:00",
+    "customerName": "Cliente Teste",
+    "customerPhone": "34999999999",
+    "customerCar": "Civic",
+    "notes": "",
+    "createdAt": "2026-07-20T19:06:46.275Z"
+  }
+]

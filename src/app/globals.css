@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+:root {
+  --mirage-blue: #0b2a8f;
+  --mirage-blue-deep: #061a5c;
+  --mirage-blue-soft: #1436a8;
+  --mirage-gold: #e0b12a;
+  --mirage-gold-soft: #f0c94a;
+  --mirage-white: #f7f8fc;
+  --mirage-ink: #0a0a0a;
+  --mirage-muted: #9aa3b8;
+  --background: #050914;
+  --foreground: #f7f8fc;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-mirage-blue: var(--mirage-blue);
+  --color-mirage-blue-deep: var(--mirage-blue-deep);
+  --color-mirage-blue-soft: var(--mirage-blue-soft);
+  --color-mirage-gold: var(--mirage-gold);
+  --color-mirage-gold-soft: var(--mirage-gold-soft);
+  --color-mirage-white: var(--mirage-white);
+  --color-mirage-ink: var(--mirage-ink);
+  --color-mirage-muted: var(--mirage-muted);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body), system-ui, sans-serif;
+  min-height: 100%;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--mirage-gold) 45%, transparent);
+  color: var(--mirage-ink);
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer-line {
+  from {
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  to {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.7s ease-out both;
+}
+
+.animate-fade-up-delay {
+  animation: fade-up 0.8s ease-out 0.15s both;
+}
+
+.animate-fade-up-delay-2 {
+  animation: fade-up 0.85s ease-out 0.28s both;
+}
+
+.animate-line {
+  animation: shimmer-line 0.9s ease-out 0.35s both;
+}
+
+.hero-glow {
+  animation: pulse-glow 5s ease-in-out infinite;
+}
+
+.font-display {
+  font-family: var(--font-display), Impact, sans-serif;
+  letter-spacing: 0.02em;
+}
