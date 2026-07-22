@@ -1,9 +1,9 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
-import { GestorDashboard } from "@/components/gestor-dashboard";
+import { ServicosPanel } from "@/components/servicos-panel";
 
-export default async function GestorHomePage() {
+export default async function ServicosPage() {
   const session = await getSession();
   if (!session) redirect("/gestor/login");
-  return <GestorDashboard />;
+  return <ServicosPanel />;
 }

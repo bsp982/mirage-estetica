@@ -6,7 +6,7 @@ import Link from "next/link";
 
 export default function GestorLoginPage() {
   const router = useRouter();
-  const [username, setUsername] = useState("admin");
+  const [username, setUsername] = useState("admin@estetica.local");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -19,7 +19,7 @@ export default function GestorLoginPage() {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ email: username, password }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -43,16 +43,14 @@ export default function GestorLoginPage() {
         <p className="mt-6 text-xs uppercase tracking-[0.25em] text-brand-gold">
           Área restrita
         </p>
-        <h1 className="font-display mt-2 text-4xl text-white">
-          Gestor · Estética MVP
-        </h1>
+        <h1 className="font-display mt-2 text-4xl text-white">CRM · Gestor</h1>
         <p className="mt-2 text-sm text-white/60">
-          Acesse para ver a agenda e os agendamentos do dia.
+          Login com e-mail e senha (Supabase + JWT).
         </p>
 
         <form onSubmit={onSubmit} className="mt-8 space-y-4">
           <div>
-            <label className="mb-2 block text-sm text-white/70">Usuário</label>
+            <label className="mb-2 block text-sm text-white/70">E-mail</label>
             <input
               value={username}
               onChange={(e) => setUsername(e.target.value)}
@@ -85,8 +83,13 @@ export default function GestorLoginPage() {
           </button>
         </form>
         <p className="mt-4 text-center text-xs text-white/40">
-          MVP: usuário <strong className="text-white/60">admin</strong> / senha{" "}
+          Demo: <strong className="text-white/60">admin@estetica.local</strong> /{" "}
           <strong className="text-white/60">admin</strong>
+        </p>
+        <p className="mt-2 text-center text-xs text-white/35">
+          <Link href="/onboarding" className="text-brand-gold/80 hover:text-brand-gold">
+            Criar nova estética (plano FREE)
+          </Link>
         </p>
       </div>
     </div>
