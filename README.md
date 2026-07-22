@@ -1,32 +1,44 @@
-# Estética MVP — Agendamentos
+# Estética MVP — CRM + Agendamento
 
-Demonstração do sistema de agendamento online para **estéticas automotivas**.
+CRM vertical para estéticas automotivas (Next.js + Prisma + **Supabase Postgres**).
 
-Este projeto é o modelo genérico apresentado aos clientes. Dados de marca, contato e preços são placeholders — em cada venda, viram a identidade da loja.
+## O que já existe
 
-## Funcionalidades (MVP)
+- Site público configurável (`/` e `/s/[slug]`)
+- Agendamento com **find-or-create de cliente por telefone** (gestor não cadastra na mão)
+- Painel CRM: dashboard, agenda com status, clientes, veículos, serviços, financeiro (PRO), indicações (PREMIUM), configurações
+- Multi-tenant preparado (`company_id`), planos FREE→ENTERPRISE, feature flags
+- Comunicação (log + hooks), Google Calendar (stub), cron de lembretes, onboarding FREE
 
-- **Cliente:** landing + fluxo de agendamento (serviço → pacotes → horário → dados)
-- **Gestor:** login e agenda com detalhes dos clientes
-- **Privacidade:** horários ocupados ficam bloqueados sem exibir nomes de outros clientes
-- **Sem banco de dados:** persistência em `data/appointments.json`
-- **Login gestor:** `admin` / `admin`
+## Setup (Supabase)
 
-## Desenvolvimento
+Veja o passo a passo em [docs/SUPABASE.md](docs/SUPABASE.md).
 
 ```bash
+cp .env.example .env
+# preencha DATABASE_URL, DIRECT_URL, SESSION_SECRET
 npm install
+npm run db:setup
 npm run dev
 ```
 
-Abra [http://localhost:3000](http://localhost:3000).
+## Login demo (após seed)
 
-- Agendar: `/agendar`
-- Gestor: `/gestor/login`
+- `admin@estetica.local` / `admin`
+- Site: `/s/estetica-mvp`
+- Onboarding: `/onboarding`
 
-## Próximos passos sugeridos
+## Scripts
 
-- Banco de dados (Postgres/Neon)
-- Integração com Google Agenda
-- Deploy na Vercel (com storage persistente)
-- Multi-tenant (uma instalação → várias estéticas)
+| Script | Uso |
+|--------|-----|
+| `npm run db:setup` | `prisma db push` + seed no Supabase |
+| `npm run db:migrate` | migrations Prisma |
+| `npm run db:seed` | seed isolado |
+| `npm run dev` | Next.js |
+
+## Fluxo de cliente
+
+1. Cliente agenda no site (nome + WhatsApp + veículo)
+2. Backend normaliza telefone e vincula/cria `Customer` + `Vehicle`
+3. Gestor vê na agenda e em `/gestor/clientes` — sem cadastro prévio
