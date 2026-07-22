@@ -6,6 +6,10 @@ export async function proxy(request: NextRequest) {
 
   const isGestorPage =
     pathname.startsWith("/gestor") && !pathname.startsWith("/gestor/login");
+  // Onboarding público: POST /api/platform/companies cria conta FREE sem sessão.
+  const isPublicPlatformOnboarding =
+    pathname === "/api/platform/companies" && request.method === "POST";
+
   const isPrivateApi =
     pathname.startsWith("/api/gestor") ||
     (pathname === "/api/appointments" && request.method === "GET") ||
@@ -16,7 +20,7 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith("/api/referrals") ||
     pathname.startsWith("/api/settings") ||
     pathname.startsWith("/api/gallery") ||
-    pathname.startsWith("/api/platform");
+    (pathname.startsWith("/api/platform") && !isPublicPlatformOnboarding);
 
   if (!isGestorPage && !isPrivateApi) {
     return NextResponse.next();

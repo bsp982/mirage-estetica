@@ -28,14 +28,30 @@ export async function GET() {
 }
 
 const onboardSchema = z.object({
-  companyName: z.string().min(2),
+  companyName: z
+    .string()
+    .trim()
+    .min(2, "Informe o nome da estética (mín. 2 caracteres)."),
   slug: z
     .string()
-    .min(2)
-    .regex(/^[a-z0-9-]+$/, "Use apenas letras minúsculas, números e hífen"),
-  adminName: z.string().min(2),
-  adminEmail: z.string().email(),
-  adminPassword: z.string().min(6),
+    .trim()
+    .min(2, "Informe o endereço do site (mín. 2 caracteres).")
+    .regex(
+      /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+      "Use só letras minúsculas, números e hífen.",
+    ),
+  adminName: z
+    .string()
+    .trim()
+    .min(2, "Informe seu nome (mín. 2 caracteres)."),
+  adminEmail: z
+    .string()
+    .trim()
+    .email("E-mail inválido. Ex: voce@empresa.com"),
+  adminPassword: z
+    .string()
+    .min(6, "A senha precisa ter pelo menos 6 caracteres.")
+    .max(72, "A senha pode ter no máximo 72 caracteres."),
   phone: z.string().optional(),
   whatsapp: z.string().optional(),
   planCode: z.enum(["FREE", "PRO", "PREMIUM", "ENTERPRISE"]).default("FREE"),
@@ -44,6 +60,24 @@ const onboardSchema = z.object({
 export async function POST(request: Request) {
   try {
     const body = onboardSchema.parse(await request.json());
+
+    const phoneDigits = (body.phone ?? "").replace(/\D/g, "");
+    const whatsappDigits = (body.whatsapp ?? body.phone ?? "").replace(
+      /\D/g,
+      "",
+    );
+    if (body.phone?.trim() && phoneDigits.length < 10) {
+      return NextResponse.json(
+        { error: "Telefone inválido. Use DDD + número." },
+        { status: 400 },
+      );
+    }
+    if (body.whatsapp?.trim() && whatsappDigits.length < 10) {
+      return NextResponse.json(
+        { error: "WhatsApp inválido. Use DDD + número." },
+        { status: 400 },
+      );
+    }
 
     const exists = await prisma.company.findUnique({
       where: { slug: body.slug },
@@ -70,9 +104,6 @@ export async function POST(request: Request) {
     }
 
     const passwordHash = await hashPassword(body.adminPassword);
-    const phoneDigits = (body.phone ?? "").replace(/\D/g, "") || null;
-    const whatsappDigits =
-      (body.whatsapp ?? body.phone ?? "").replace(/\D/g, "") || null;
 
     const company = await prisma.company.create({
       data: {
@@ -88,8 +119,8 @@ export async function POST(request: Request) {
             secondaryColor: "#e0b12a",
             heroImageUrl: "/hero/hero-main.jpg",
             hoursLabel: "Seg a Sáb · 08h às 18h",
-            phone: phoneDigits,
-            whatsapp: whatsappDigits,
+            phone: phoneDigits || null,
+            whatsapp: whatsappDigits || null,
           },
         },
         users: {

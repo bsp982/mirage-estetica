@@ -3,10 +3,11 @@
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { readApiJson } from "@/lib/http";
 
 export default function GestorLoginPage() {
   const router = useRouter();
-  const [username, setUsername] = useState("admin@estetica.local");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -15,13 +16,26 @@ export default function GestorLoginPage() {
     e.preventDefault();
     setLoading(true);
     setError("");
+
+    const email = username.trim();
+    if (!email || !password) {
+      setError("Informe e-mail e senha para entrar.");
+      setLoading(false);
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError("E-mail inválido.");
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: username, password }),
+        body: JSON.stringify({ email, password }),
       });
-      const data = await res.json();
+      const data = await readApiJson<{ error?: string }>(res);
       if (!res.ok) {
         throw new Error(data.error || "Falha no login");
       }

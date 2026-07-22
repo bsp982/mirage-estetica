@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { formatBRL } from "@/lib/money";
+import { readApiJson } from "@/lib/http";
 import type { Service } from "@/lib/types";
 
 type Step = 1 | 2 | 3 | 4 | 5;
@@ -98,7 +99,15 @@ export function BookingWizard({
           ...(companyId ? { companyId } : {}),
         });
         const res = await fetch(`/api/slots?${qs.toString()}`);
-        const data = await res.json();
+        const data = await readApiJson<{
+          available?: string[];
+          occupied?: string[];
+          closed?: boolean;
+          error?: string;
+        }>(res);
+        if (!res.ok) {
+          throw new Error(data.error || "Não foi possível carregar horários");
+        }
         if (cancelled) return;
         setAvailable(data.available ?? []);
         setOccupied(data.occupied ?? []);
@@ -129,6 +138,23 @@ export function BookingWizard({
   async function submit() {
     setSubmitting(true);
     setError("");
+    const name = customerName.trim();
+    const phone = customerPhone.trim();
+    if (name.length < 2) {
+      setError("Informe seu nome completo.");
+      setSubmitting(false);
+      return;
+    }
+    if (phone.replace(/\D/g, "").length < 10) {
+      setError("Informe um WhatsApp válido com DDD.");
+      setSubmitting(false);
+      return;
+    }
+    if (!time) {
+      setError("Escolha um horário disponível");
+      setSubmitting(false);
+      return;
+    }
     try {
       const res = await fetch("/api/appointments", {
         method: "POST",
@@ -138,17 +164,23 @@ export function BookingWizard({
           packageIds,
           date,
           time,
-          customerName,
-          customerPhone,
+          customerName: name,
+          customerPhone: phone,
           customerCar,
           notes,
           referralCode: referralCode || undefined,
           companyId,
         }),
       });
-      const data = await res.json();
+      const data = await readApiJson<{
+        error?: string;
+        appointment?: { id: string };
+      }>(res);
       if (!res.ok) {
         throw new Error(data.error || "Falha ao agendar");
+      }
+      if (!data.appointment?.id) {
+        throw new Error("Agendamento sem confirmação. Tente novamente.");
       }
       setDoneId(data.appointment.id);
       setStep(5);

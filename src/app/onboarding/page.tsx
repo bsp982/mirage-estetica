@@ -5,12 +5,86 @@ import Link from "next/link";
 import { PlatformHeader } from "@/components/platform-header";
 import { PlatformFooter } from "@/components/platform-footer";
 import { slugifyCompanyName } from "@/lib/platform";
+import { readApiJson } from "@/lib/http";
+import { normalizePhone } from "@/lib/phone";
 
 type Success = {
   sitePath: string;
   email: string;
   companyName: string;
 };
+
+type FieldErrors = Partial<
+  Record<
+    | "companyName"
+    | "slug"
+    | "adminName"
+    | "adminEmail"
+    | "adminPassword"
+    | "whatsapp"
+    | "phone",
+    string
+  >
+>;
+
+function isValidEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+}
+
+function validateFields(input: {
+  companyName: string;
+  slug: string;
+  adminName: string;
+  adminEmail: string;
+  adminPassword: string;
+  whatsapp: string;
+  phone: string;
+}): FieldErrors {
+  const errors: FieldErrors = {};
+  const companyName = input.companyName.trim();
+  const slug = input.slug.trim();
+  const adminName = input.adminName.trim();
+  const adminEmail = input.adminEmail.trim();
+  const adminPassword = input.adminPassword;
+  const whatsappDigits = normalizePhone(input.whatsapp);
+  const phoneDigits = normalizePhone(input.phone);
+
+  if (companyName.length < 2) {
+    errors.companyName = "Informe o nome da estética (mín. 2 caracteres).";
+  }
+  if (slug.length < 2) {
+    errors.slug = "Informe o endereço do site (mín. 2 caracteres).";
+  } else if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
+    errors.slug =
+      "Use só letras minúsculas, números e hífen (sem começar/terminar com hífen).";
+  }
+  if (adminName.length < 2) {
+    errors.adminName = "Informe seu nome (mín. 2 caracteres).";
+  }
+  if (!adminEmail) {
+    errors.adminEmail = "Informe o e-mail de acesso.";
+  } else if (!isValidEmail(adminEmail)) {
+    errors.adminEmail = "E-mail inválido. Ex: voce@empresa.com";
+  }
+  if (adminPassword.length < 6) {
+    errors.adminPassword = "A senha precisa ter pelo menos 6 caracteres.";
+  } else if (adminPassword.length > 72) {
+    errors.adminPassword = "A senha pode ter no máximo 72 caracteres.";
+  }
+  if (input.whatsapp.trim() && whatsappDigits.length < 10) {
+    errors.whatsapp = "WhatsApp inválido. Use DDD + número (mín. 10 dígitos).";
+  }
+  if (input.phone.trim() && phoneDigits.length < 10) {
+    errors.phone = "Telefone inválido. Use DDD + número (mín. 10 dígitos).";
+  }
+
+  return errors;
+}
+
+function FieldError({ message }: { message?: string }) {
+  if (!message) return null;
+  return <span className="mt-1 block text-xs text-red-300">{message}</span>;
+}
 
 export default function OnboardingPage() {
   const [companyName, setCompanyName] = useState("");
@@ -23,6 +97,7 @@ export default function OnboardingPage() {
   const [whatsapp, setWhatsapp] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [success, setSuccess] = useState<Success | null>(null);
 
   useEffect(() => {
@@ -34,29 +109,52 @@ export default function OnboardingPage() {
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setError("");
+
+    const nextErrors = validateFields({
+      companyName,
+      slug,
+      adminName,
+      adminEmail,
+      adminPassword,
+      whatsapp,
+      phone,
+    });
+    setFieldErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) {
+      setError("Revise os campos destacados antes de continuar.");
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await fetch("/api/platform/companies", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          companyName,
-          slug,
-          adminName,
-          adminEmail,
+          companyName: companyName.trim(),
+          slug: slug.trim(),
+          adminName: adminName.trim(),
+          adminEmail: adminEmail.trim(),
           adminPassword,
-          phone,
-          whatsapp: whatsapp || phone,
+          phone: phone.trim() || undefined,
+          whatsapp: (whatsapp || phone).trim() || undefined,
           planCode: "FREE",
         }),
       });
-      const data = await res.json();
+      const data = await readApiJson<{
+        error?: string;
+        sitePath?: string;
+        company?: { name: string };
+      }>(res);
       if (!res.ok) {
         throw new Error(data.error || "Falha no cadastro");
       }
+      if (!data.sitePath || !data.company?.name) {
+        throw new Error("Cadastro incompleto. Tente novamente.");
+      }
       setSuccess({
         sitePath: data.sitePath,
-        email: adminEmail,
+        email: adminEmail.trim(),
         companyName: data.company.name,
       });
     } catch (err) {
@@ -65,6 +163,11 @@ export default function OnboardingPage() {
       setLoading(false);
     }
   }
+
+  const inputClass = (hasError?: string) =>
+    `mt-1 w-full rounded-xl border bg-black/40 px-3 py-2.5 text-white outline-none focus:border-brand-gold ${
+      hasError ? "border-red-400/50" : "border-white/15"
+    }`;
 
   return (
     <div className="flex min-h-full flex-col">
@@ -116,6 +219,7 @@ export default function OnboardingPage() {
         ) : (
           <form
             onSubmit={onSubmit}
+            noValidate
             className="w-full max-w-lg space-y-4 rounded-[1.75rem] border border-white/10 bg-black/30 p-8"
           >
             <p className="text-xs uppercase tracking-[0.22em] text-brand-gold">
@@ -132,12 +236,15 @@ export default function OnboardingPage() {
               Nome da estética *
               <input
                 value={companyName}
-                onChange={(e) => setCompanyName(e.target.value)}
-                required
-                minLength={2}
-                className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2.5 text-white outline-none focus:border-brand-gold"
+                onChange={(e) => {
+                  setCompanyName(e.target.value);
+                  setFieldErrors((prev) => ({ ...prev, companyName: undefined }));
+                }}
+                className={inputClass(fieldErrors.companyName)}
                 placeholder="Ex: Auto Detail João"
+                autoComplete="organization"
               />
+              <FieldError message={fieldErrors.companyName} />
             </label>
 
             <label className="block text-sm text-white/70">
@@ -149,16 +256,18 @@ export default function OnboardingPage() {
                   setSlug(
                     e.target.value
                       .toLowerCase()
-                      .replace(/[^a-z0-9-]/g, "-"),
+                      .replace(/[^a-z0-9-]/g, "-")
+                      .replace(/-+/g, "-"),
                   );
+                  setFieldErrors((prev) => ({ ...prev, slug: undefined }));
                 }}
-                required
-                pattern="^[a-z0-9-]+$"
-                className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2.5 text-white outline-none focus:border-brand-gold"
+                className={inputClass(fieldErrors.slug)}
+                autoComplete="off"
               />
               <span className="mt-1 block text-xs text-white/40">
                 Seu site ficará em /s/{slug || "sua-estetica"}
               </span>
+              <FieldError message={fieldErrors.slug} />
             </label>
 
             <div className="grid gap-4 sm:grid-cols-2">
@@ -166,19 +275,29 @@ export default function OnboardingPage() {
                 Seu nome *
                 <input
                   value={adminName}
-                  onChange={(e) => setAdminName(e.target.value)}
-                  required
-                  className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2.5 text-white outline-none focus:border-brand-gold"
+                  onChange={(e) => {
+                    setAdminName(e.target.value);
+                    setFieldErrors((prev) => ({ ...prev, adminName: undefined }));
+                  }}
+                  className={inputClass(fieldErrors.adminName)}
+                  autoComplete="name"
                 />
+                <FieldError message={fieldErrors.adminName} />
               </label>
               <label className="block text-sm text-white/70">
                 WhatsApp da loja
                 <input
                   value={whatsapp}
-                  onChange={(e) => setWhatsapp(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2.5 text-white outline-none focus:border-brand-gold"
+                  onChange={(e) => {
+                    setWhatsapp(e.target.value);
+                    setFieldErrors((prev) => ({ ...prev, whatsapp: undefined }));
+                  }}
+                  className={inputClass(fieldErrors.whatsapp)}
                   placeholder="11999990000"
+                  inputMode="tel"
+                  autoComplete="tel"
                 />
+                <FieldError message={fieldErrors.whatsapp} />
               </label>
             </div>
 
@@ -186,9 +305,15 @@ export default function OnboardingPage() {
               Telefone
               <input
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2.5 text-white outline-none focus:border-brand-gold"
+                onChange={(e) => {
+                  setPhone(e.target.value);
+                  setFieldErrors((prev) => ({ ...prev, phone: undefined }));
+                }}
+                className={inputClass(fieldErrors.phone)}
+                inputMode="tel"
+                autoComplete="tel"
               />
+              <FieldError message={fieldErrors.phone} />
             </label>
 
             <label className="block text-sm text-white/70">
@@ -196,10 +321,14 @@ export default function OnboardingPage() {
               <input
                 type="email"
                 value={adminEmail}
-                onChange={(e) => setAdminEmail(e.target.value)}
-                required
-                className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2.5 text-white outline-none focus:border-brand-gold"
+                onChange={(e) => {
+                  setAdminEmail(e.target.value);
+                  setFieldErrors((prev) => ({ ...prev, adminEmail: undefined }));
+                }}
+                className={inputClass(fieldErrors.adminEmail)}
+                autoComplete="email"
               />
+              <FieldError message={fieldErrors.adminEmail} />
             </label>
 
             <label className="block text-sm text-white/70">
@@ -207,11 +336,17 @@ export default function OnboardingPage() {
               <input
                 type="password"
                 value={adminPassword}
-                onChange={(e) => setAdminPassword(e.target.value)}
-                required
-                minLength={6}
-                className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2.5 text-white outline-none focus:border-brand-gold"
+                onChange={(e) => {
+                  setAdminPassword(e.target.value);
+                  setFieldErrors((prev) => ({
+                    ...prev,
+                    adminPassword: undefined,
+                  }));
+                }}
+                className={inputClass(fieldErrors.adminPassword)}
+                autoComplete="new-password"
               />
+              <FieldError message={fieldErrors.adminPassword} />
             </label>
 
             {error && (
