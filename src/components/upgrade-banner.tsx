@@ -14,18 +14,14 @@ export function UpgradeBanner({
       </p>
       <h2 className="mt-2 text-lg font-semibold text-white">{featureLabel}</h2>
       <p className="mt-2 text-sm text-white/65">
-        Seu plano FREE já cobre site e agenda. Faça upgrade quando quiser
-        liberar {featureLabel.toLowerCase()} e outros recursos de operação.
-      </p>
-      <p className="mt-4 text-xs text-white/45">
-        Em breve: upgrade pelo painel. Por enquanto, fale conosco para ativar o{" "}
-        {planHint}.
+        Seu plano FREE já cobre site e agenda. Faça upgrade para liberar{" "}
+        {featureLabel.toLowerCase()} e outros recursos de operação.
       </p>
       <Link
-        href="/"
-        className="mt-4 inline-flex text-sm font-semibold text-brand-gold hover:text-brand-gold-soft"
+        href="/gestor/plano"
+        className="mt-4 inline-flex rounded-full bg-brand-gold px-5 py-2.5 text-sm font-semibold text-brand-ink hover:bg-brand-gold-soft"
       >
-        Ver planos na página inicial →
+        Assinar {planHint} agora →
       </Link>
     </div>
   );

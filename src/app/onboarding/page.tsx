@@ -15,6 +15,7 @@ type Success = {
   email: string;
   companyName: string;
   emailSent: boolean;
+  emailError?: string | null;
 };
 
 type FieldErrors = Partial<
@@ -150,6 +151,7 @@ export default function OnboardingPage() {
         siteUrl?: string;
         gestorUrl?: string;
         emailSent?: boolean;
+        emailError?: string | null;
         company?: { name: string };
       }>(res);
       if (!res.ok) {
@@ -167,6 +169,7 @@ export default function OnboardingPage() {
         email: adminEmail.trim(),
         companyName: data.company.name,
         emailSent: Boolean(data.emailSent),
+        emailError: data.emailError ?? null,
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Falha no cadastro");
@@ -201,9 +204,9 @@ export default function OnboardingPage() {
                 Enviamos um e-mail para {success.email} com os dois links.
               </p>
             ) : (
-              <p className="rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm text-white/65">
-                Guarde os links abaixo. O e-mail de boas-vindas será enviado
-                quando o provedor de e-mail estiver configurado.
+              <p className="rounded-xl border border-amber-400/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-100">
+                {success.emailError ||
+                  "Não foi possível enviar o e-mail agora. Os links estão abaixo — você pode copiá-los."}
               </p>
             )}
             <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white/80 space-y-3">

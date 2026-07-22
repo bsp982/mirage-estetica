@@ -183,6 +183,7 @@ export async function POST(request: Request) {
     const gestorUrl = gestorLoginUrl();
 
     let emailSent = false;
+    let emailError: string | null = null;
     try {
       const mail = await sendOnboardingWelcomeEmail({
         companyId: company.id,
@@ -192,8 +193,17 @@ export async function POST(request: Request) {
         adminEmail: body.adminEmail.toLowerCase(),
       });
       emailSent = mail.sent;
+      if (!mail.sent) {
+        emailError = mail.status.startsWith("FAILED:")
+          ? mail.status.slice("FAILED:".length)
+          : mail.status;
+      }
     } catch (mailError) {
       console.error("[onboarding:email]", mailError);
+      emailError =
+        mailError instanceof Error
+          ? mailError.message
+          : "Falha ao enviar e-mail de boas-vindas";
     }
 
     return NextResponse.json(
@@ -204,6 +214,7 @@ export async function POST(request: Request) {
         gestorUrl,
         loginPath: "/gestor/login",
         emailSent,
+        emailError,
       },
       { status: 201 },
     );

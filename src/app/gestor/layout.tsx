@@ -11,6 +11,7 @@ const NAV = [
   { href: "/gestor/servicos", label: "Serviços", feature: "SERVICES" },
   { href: "/gestor/financeiro", label: "Financeiro", feature: "FINANCIAL" },
   { href: "/gestor/indicacoes", label: "Indicações", feature: "REFERRAL" },
+  { href: "/gestor/plano", label: "Planos", feature: null },
   { href: "/gestor/configuracoes", label: "Configurações", feature: null },
 ] as const;
 

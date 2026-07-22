@@ -10,8 +10,12 @@ export async function proxy(request: NextRequest) {
   const isPublicPlatformOnboarding =
     pathname === "/api/platform/companies" && request.method === "POST";
 
+  const isPublicBillingWebhook =
+    pathname === "/api/billing/webhook" && request.method === "POST";
+
   const isPrivateApi =
     pathname.startsWith("/api/gestor") ||
+    pathname.startsWith("/api/billing") ||
     (pathname === "/api/appointments" && request.method === "GET") ||
     pathname.startsWith("/api/customers") ||
     pathname.startsWith("/api/vehicles") ||
@@ -22,7 +26,11 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith("/api/gallery") ||
     (pathname.startsWith("/api/platform") && !isPublicPlatformOnboarding);
 
-  if (!isGestorPage && !isPrivateApi) {
+  if (
+    (!isGestorPage && !isPrivateApi) ||
+    isPublicPlatformOnboarding ||
+    isPublicBillingWebhook
+  ) {
     return NextResponse.next();
   }
 

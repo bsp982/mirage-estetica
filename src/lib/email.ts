@@ -43,10 +43,26 @@ async function sendWithResend(input: SendEmailInput): Promise<SendEmailResult> {
   if (!res.ok) {
     const detail = await res.text();
     console.error("[email:resend]", res.status, detail.slice(0, 300));
+    let reason = `Resend falhou (${res.status})`;
+    try {
+      const parsed = JSON.parse(detail) as {
+        message?: string;
+        name?: string;
+      };
+      const msg = parsed.message || "";
+      if (/testing domain|verify a domain|own email/i.test(msg)) {
+        reason =
+          "O domínio de teste do Resend só envia para o e-mail da conta. Verifique um domínio próprio e altere o remetente (EMAIL_FROM).";
+      } else if (msg) {
+        reason = msg;
+      }
+    } catch {
+      // ignore parse errors
+    }
     return {
       ok: false,
       provider: "none",
-      reason: `Resend falhou (${res.status})`,
+      reason,
     };
   }
 
