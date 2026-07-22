@@ -1,185 +1,124 @@
+import { prisma } from "./db";
 import type { Service } from "./types";
+import { getDefaultCompany } from "./tenant";
 
-export const BUSINESS = {
-  name: "Estética MVP",
-  shortName: "ESTÉTICA MVP",
-  mark: "EM",
-  handle: "@sua_estetica",
-  motto: "Seu carro foi feito para brilhar",
-  city: "Demonstração",
-  phone: "(00) 00000-0000",
-  phoneHref: "tel:+5500000000000",
-  whatsappHref: "https://wa.me/5500000000000",
-  instagramHref: "https://www.instagram.com/",
-  hoursLabel: "Seg a Sáb · 08h às 18h",
-  addressHint: "Atendimento apenas com agendamento · dados de demonstração",
-};
+export { BUSINESS, SELLER, BASE_SLOTS } from "./brand";
+export { formatBRL } from "./money";
 
-/** Horários base (slots de 1h). Serviços longos ocupam N slots. */
-export const BASE_SLOTS = [
-  "08:00",
-  "09:00",
-  "10:00",
-  "11:00",
-  "12:00",
-  "13:00",
-  "14:00",
-  "15:00",
-  "16:00",
-  "17:00",
-] as const;
-
-export const SERVICES: Service[] = [
-  {
-    id: "lavagem-detalhada",
-    name: "Lavagem Detalhada",
-    tagline: "Limpeza técnica de dentro pra fora",
-    description:
-      "Protocolo de lavagem profissional com atenção a detalhes que o lava-rápido comum não alcança.",
-    durationHours: 2,
-    priceFrom: 120,
-    packages: [
-      {
-        id: "lav-ext",
-        name: "Externa premium",
-        description: "Pré-lavagem, shampoo neutro, secagem e pneus",
-        included: true,
-      },
-      {
-        id: "lav-int",
-        name: "Interna completa",
-        description: "Aspiração, painéis, vidros internos e portes",
-        included: true,
-      },
-      {
-        id: "lav-motor",
-        name: "Compartimento do motor",
-        description: "Limpeza e proteção do bay do motor",
-        included: false,
-      },
-      {
-        id: "lav-cera",
-        name: "Cera de proteção",
-        description: "Camada de brilho e proteção rápida",
-        included: false,
-      },
-    ],
-  },
-  {
-    id: "higienizacao",
-    name: "Higienização Interna",
-    tagline: "Conforto e cheiro de carro novo",
-    description:
-      "Remoção profunda de sujeira, óleos e odores em bancos, carpetes e teto.",
-    durationHours: 3,
-    priceFrom: 280,
-    packages: [
-      {
-        id: "hig-bancos",
-        name: "Bancos e laterais",
-        description: "Extração e limpeza de tecidos ou couro",
-        included: true,
-      },
-      {
-        id: "hig-carpetes",
-        name: "Carpetes e assoalho",
-        description: "Lavagem com extratora e secagem controlada",
-        included: true,
-      },
-      {
-        id: "hig-teto",
-        name: "Teto e colunas",
-        description: "Limpeza delicada do forro interno",
-        included: true,
-      },
-      {
-        id: "hig-ozonio",
-        name: "Ozônio / antiodor",
-        description: "Neutralização de odores persistentes",
-        included: false,
-      },
-    ],
-  },
-  {
-    id: "polimento-vitrificacao",
-    name: "Polimento & Vitrificação",
-    tagline: "Brilho espelhado e proteção real",
-    description:
-      "Correção de pintura e proteção cerâmica para valorizar o visual e preservar a lataria.",
-    durationHours: 4,
-    priceFrom: 650,
-    packages: [
-      {
-        id: "pol-correcao",
-        name: "Correção de pintura",
-        description: "Remoção de swirls e opacidade",
-        included: true,
-      },
-      {
-        id: "pol-vitri",
-        name: "Vitrificação / cerâmica",
-        description: "Proteção de longa duração e brilho intenso",
-        included: true,
-      },
-      {
-        id: "pol-plasticos",
-        name: "Plásticos externos",
-        description: "Revitalização de frisos e para-choques",
-        included: false,
-      },
-      {
-        id: "pol-vidros",
-        name: "Tratamento de vidros",
-        description: "Repelência e clareza nos vidros",
-        included: false,
-      },
-    ],
-  },
-  {
-    id: "insulfilm",
-    name: "Insulfilm Window Blue",
-    tagline: "Conforto térmico com garantia",
-    description:
-      "Películas profissionais para reduzir calor, proteger a pele e elevar o visual do veículo.",
-    durationHours: 3,
-    priceFrom: 890,
-    packages: [
-      {
-        id: "ins-laterais",
-        name: "Laterais + vigia",
-        description: "Aplicação nas janelas laterais e traseira",
-        included: true,
-      },
-      {
-        id: "ins-parabrisas",
-        name: "Para-brisa",
-        description: "Filme no para-brisa com certificado",
-        included: false,
-      },
-      {
-        id: "ins-teto",
-        name: "Teto solar",
-        description: "Proteção e conforto no teto",
-        included: false,
-      },
-      {
-        id: "ins-garantia",
-        name: "Certificado de garantia",
-        description: "Documentação oficial do serviço",
-        included: true,
-      },
-    ],
-  },
-];
-
-export function getServiceById(id: string): Service | undefined {
-  return SERVICES.find((s) => s.id === id);
+function mapService(row: {
+  id: string;
+  slug: string;
+  name: string;
+  tagline: string | null;
+  description: string;
+  durationHours: number;
+  priceFrom: number;
+  category: string | null;
+  imageUrl: string | null;
+  active: boolean;
+  packages: {
+    id: string;
+    slug: string;
+    name: string;
+    description: string;
+    included: boolean;
+  }[];
+}): Service {
+  return {
+    id: row.id,
+    slug: row.slug,
+    name: row.name,
+    tagline: row.tagline ?? "",
+    description: row.description,
+    durationHours: row.durationHours,
+    priceFrom: row.priceFrom,
+    category: row.category,
+    imageUrl: row.imageUrl,
+    active: row.active,
+    packages: row.packages.map((p) => ({
+      id: p.slug,
+      slug: p.slug,
+      name: p.name,
+      description: p.description,
+      included: p.included,
+    })),
+  };
 }
 
-export function formatBRL(value: number): string {
-  return value.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-    maximumFractionDigits: 0,
+export async function listActiveServices(
+  companyId?: string,
+): Promise<Service[]> {
+  const cid = companyId ?? (await getDefaultCompany()).id;
+  const rows = await prisma.service.findMany({
+    where: { companyId: cid, active: true },
+    include: { packages: { orderBy: { sortOrder: "asc" } } },
+    orderBy: { sortOrder: "asc" },
   });
+  return rows.map(mapService);
+}
+
+export async function getServiceById(
+  idOrSlug: string,
+  companyId?: string,
+): Promise<Service | undefined> {
+  const cid = companyId ?? (await getDefaultCompany()).id;
+  const row = await prisma.service.findFirst({
+    where: {
+      companyId: cid,
+      OR: [{ id: idOrSlug }, { slug: idOrSlug }],
+    },
+    include: { packages: { orderBy: { sortOrder: "asc" } } },
+  });
+  return row ? mapService(row) : undefined;
+}
+
+export async function getBusinessProfile(companyId?: string) {
+  const company = companyId
+    ? await prisma.company.findUnique({
+        where: { id: companyId },
+        include: { settings: true },
+      })
+    : await getDefaultCompany();
+
+  if (!company) {
+    throw new Error("Empresa não encontrada");
+  }
+
+  const s = company.settings;
+  return {
+    id: company.id,
+    slug: company.slug,
+    name: company.name,
+    shortName: company.name.toUpperCase(),
+    mark: company.name
+      .split(/\s+/)
+      .map((w) => w[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase(),
+    handle: s?.instagram
+      ? `@${s.instagram.replace(/^@/, "").split("/").pop()}`
+      : "@sua_estetica",
+    motto: s?.motto ?? "Seu carro foi feito para brilhar",
+    city: "Demonstração",
+    phone: s?.phone ?? "",
+    phoneHref: s?.phone ? `tel:${s.phone.replace(/\D/g, "")}` : "#",
+    whatsappHref: s?.whatsapp
+      ? `https://wa.me/${s.whatsapp.replace(/\D/g, "")}`
+      : "#",
+    instagramHref: s?.instagram ?? "https://www.instagram.com/",
+    hoursLabel: s?.hoursLabel ?? "Seg a Sáb · 08h às 18h",
+    addressHint: s?.address ?? "",
+    description: s?.description ?? "",
+    about: s?.about ?? "",
+    primaryColor: s?.primaryColor ?? "#0b2a8f",
+    secondaryColor: s?.secondaryColor ?? "#e0b12a",
+    heroImageUrl: s?.heroImageUrl ?? "/hero/hero-main.jpg",
+    showTestimonials: s?.showTestimonials ?? true,
+    showGallery: s?.showGallery ?? true,
+    showAbout: s?.showAbout ?? true,
+    showServices: s?.showServices ?? true,
+    showCta: s?.showCta ?? true,
+    showContact: s?.showContact ?? true,
+  };
 }

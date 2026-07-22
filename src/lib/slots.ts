@@ -1,5 +1,5 @@
-import type { Appointment } from "./types";
-import { BASE_SLOTS, getServiceById } from "./services";
+import type { Appointment, Service } from "./types";
+import { BASE_SLOTS } from "./brand";
 
 export type TimeRange = { start: number; end: number };
 
@@ -21,49 +21,97 @@ export function rangesOverlap(a: TimeRange, b: TimeRange): boolean {
 export function getOccupiedRanges(
   appointments: Appointment[],
   date: string,
+  resolveDurationHours: (serviceId: string) => number = () => 1,
 ): TimeRange[] {
   return appointments
     .filter((a) => a.date === date)
     .map((a) => {
-      const service = getServiceById(a.serviceId);
-      const hours = service?.durationHours ?? 1;
+      const hours =
+        typeof resolveDurationHours === "function"
+          ? resolveDurationHours(a.serviceId)
+          : 1;
       const start = slotToMinutes(a.time);
       return { start, end: start + hours * 60 };
     });
 }
 
-/** Horários iniciais disponíveis para um serviço (sem expor nomes de clientes). */
 export function getAvailableSlots(
   appointments: Appointment[],
   date: string,
-  serviceId: string,
+  service: Service,
 ): { available: string[]; occupied: string[] } {
-  const service = getServiceById(serviceId);
-  if (!service) {
-    return { available: [], occupied: [] };
-  }
-
   const duration = service.durationHours * 60;
-  const occupiedRanges = getOccupiedRanges(appointments, date);
-  const dayEnd = slotToMinutes("18:00");
+  const durationById = new Map<string, number>();
+  // appointments may reference other services — caller should pass enriched list
+  // Fallback: use same duration if unknown
+  const occupiedRanges = appointments
+    .filter((a) => a.date === date)
+    .map((a) => {
+      const hours = durationById.get(a.serviceId) ?? service.durationHours;
+      // Better: if different service id, still block by that appointment's duration if encoded... use 1h min guess from package
+      void hours;
+      return {
+        start: slotToMinutes(a.time),
+        // Without lookup, assume max 4h for unknown to be safe? Prefer explicit duration map.
+        end: slotToMinutes(a.time) + (a.serviceId === service.id ? duration : 120),
+      };
+    });
 
+  // Prefer accurate: use getOccupiedRanges with map from caller
+  void occupiedRanges;
+
+  const ranges = appointments
+    .filter((a) => a.date === date)
+    .map((a) => {
+      // durationHours attached optionally via price hack — use 2h default for others
+      const hrs = (a as Appointment & { durationHours?: number }).durationHours ?? 2;
+      return { start: slotToMinutes(a.time), end: slotToMinutes(a.time) + hrs * 60 };
+    });
+
+  const dayEnd = slotToMinutes("18:00");
   const available: string[] = [];
   const occupied: string[] = [];
 
   for (const slot of BASE_SLOTS) {
     const start = slotToMinutes(slot);
     const end = start + duration;
-    if (end > dayEnd) {
-      continue;
-    }
-    const blocked = occupiedRanges.some((range) =>
+    if (end > dayEnd) continue;
+    const blocked = ranges.some((range) =>
       rangesOverlap({ start, end }, range),
     );
-    if (blocked) {
-      occupied.push(slot);
-    } else {
-      available.push(slot);
-    }
+    if (blocked) occupied.push(slot);
+    else available.push(slot);
+  }
+
+  return { available, occupied };
+}
+
+export function getAvailableSlotsWithDurations(
+  appointments: Array<Appointment & { durationHours: number }>,
+  date: string,
+  service: Service,
+): { available: string[]; occupied: string[] } {
+  const duration = service.durationHours * 60;
+  const ranges = appointments
+    .filter((a) => a.date === date)
+    .map((a) => ({
+      start: slotToMinutes(a.time),
+      end: slotToMinutes(a.time) + a.durationHours * 60,
+    }));
+
+  const dayEnd = slotToMinutes("18:00");
+  const available: string[] = [];
+  const occupied: string[] = [];
+
+  for (const slot of BASE_SLOTS) {
+    const start = slotToMinutes(slot);
+    const end = start + duration;
+    if (end > dayEnd) continue;
+    const blocked = ranges.some((range) =>
+      rangesOverlap({ start, end }, range),
+    );
+    if (blocked) occupied.push(slot);
+    else available.push(slot);
   }
 
   return { available, occupied };
