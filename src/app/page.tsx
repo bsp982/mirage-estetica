@@ -1,82 +1,78 @@
 import Link from "next/link";
-import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
-import { BUSINESS, SERVICES, formatBRL } from "@/lib/services";
+import Image from "next/image";
+import { PlatformHeader } from "@/components/platform-header";
+import { PlatformFooter } from "@/components/platform-footer";
+import {
+  FREE_PLAN_BULLETS,
+  PAID_PLAN_TEASERS,
+  PLATFORM,
+} from "@/lib/platform";
 
 export default function HomePage() {
   return (
     <div className="flex min-h-full flex-col">
-      <SiteHeader />
+      <PlatformHeader />
 
       <main className="flex-1">
         <section className="relative min-h-[88vh] overflow-hidden">
+          <Image
+            src="/hero/hero-main.jpg"
+            alt="Estética automotiva profissional"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center"
+          />
           <div
             className="absolute inset-0"
             style={{
               background:
-                "radial-gradient(ellipse 80% 60% at 70% 20%, #1436a8 0%, transparent 55%), radial-gradient(ellipse 50% 40% at 10% 80%, #0b2a8f 0%, transparent 50%), linear-gradient(160deg, #050914 0%, #061a5c 45%, #050914 100%)",
+                "linear-gradient(105deg, rgba(5,9,20,0.92) 0%, rgba(5,9,20,0.7) 45%, rgba(5,9,20,0.45) 100%)",
             }}
           />
-          <div
-            className="hero-glow pointer-events-none absolute -right-20 top-10 h-72 w-72 rounded-full bg-brand-gold/20 blur-3xl"
-            aria-hidden
-          />
-          <div
-            className="pointer-events-none absolute inset-0 opacity-[0.07]"
-            style={{
-              backgroundImage:
-                "linear-gradient(rgba(255,255,255,.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.5) 1px, transparent 1px)",
-              backgroundSize: "48px 48px",
-            }}
-            aria-hidden
-          />
-
           <div className="relative mx-auto flex min-h-[88vh] max-w-6xl flex-col justify-end px-5 pb-16 pt-24 sm:justify-center sm:pb-24">
             <p className="animate-fade-up text-xs uppercase tracking-[0.35em] text-brand-gold">
-              {BUSINESS.city} · Detailer profissional
+              Para donos de estética automotiva
             </p>
-            <h1 className="animate-fade-up-delay font-display mt-4 max-w-4xl text-6xl leading-[0.92] text-white sm:text-8xl">
-              ESTÉTICA
-              <span className="mt-2 block text-3xl tracking-[0.12em] text-brand-gold sm:text-4xl">
-                MVP
-              </span>
+            <h1 className="animate-fade-up-delay font-display mt-4 max-w-4xl text-5xl leading-[0.95] text-white sm:text-7xl lg:text-8xl">
+              {PLATFORM.shortName}
             </h1>
             <div className="animate-line mt-5 h-[3px] w-28 bg-brand-gold" />
             <p className="animate-fade-up-delay-2 mt-6 max-w-xl text-lg text-white/80 sm:text-xl">
-              {BUSINESS.motto}. Agende seu horário pelo site — escolha o
-              serviço, o pacote e o melhor horário, sem espera no WhatsApp.
+              {PLATFORM.tagline}. Cadastre sua estética, publique o site e
+              comece a receber agendamentos — no plano gratuito.
             </p>
             <div className="animate-fade-up-delay-2 mt-8 flex flex-wrap gap-3">
               <Link
-                href="/agendar"
-                className="rounded-full bg-brand-gold px-7 py-3.5 text-sm font-bold uppercase tracking-wide text-brand-ink transition hover:bg-brand-gold-soft"
+                href="/onboarding"
+                className="rounded-full bg-brand-gold px-7 py-3.5 text-sm font-bold uppercase tracking-wide text-brand-ink hover:bg-brand-gold-soft"
               >
-                Agendar agora
+                Criar minha estética grátis
               </Link>
-              <a
-                href="#servicos"
-                className="rounded-full border border-white/25 px-7 py-3.5 text-sm font-semibold text-white transition hover:border-white/50"
+              <Link
+                href="/s/estetica-mvp"
+                className="rounded-full border border-white/25 px-7 py-3.5 text-sm font-semibold text-white hover:border-white/50"
               >
-                Ver serviços
-              </a>
+                Ver demonstração
+              </Link>
             </div>
           </div>
         </section>
 
         <section className="border-y border-white/10 bg-brand-blue-deep/40">
-          <div className="mx-auto grid max-w-6xl gap-6 px-5 py-10 sm:grid-cols-3">
+          <div className="mx-auto grid max-w-6xl gap-8 px-5 py-14 sm:grid-cols-3">
             {[
               {
-                title: "Só com agendamento",
-                text: "Seu horário é exclusivo. Sem fila e sem surpresa.",
+                title: "Site da sua marca",
+                text: "Página com serviços, horários e identidade da sua estética.",
               },
               {
-                title: "Pacotes transparentes",
-                text: "Veja o que está incluso e adicione opcionais em segundos.",
+                title: "Agenda sem planilha",
+                text: "Cliente agenda sozinho. Você acompanha e avança o status no painel.",
               },
               {
-                title: "Privacidade no calendário",
-                text: "Horários ocupados ficam bloqueados — sem mostrar nomes de outros clientes.",
+                title: "Cliente automático",
+                text: "Nome e WhatsApp no agendamento já viram cadastro no CRM.",
               },
             ].map((item) => (
               <div key={item.title}>
@@ -89,85 +85,97 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="servicos" className="mx-auto max-w-6xl px-5 py-20">
+        <section id="planos" className="mx-auto max-w-6xl px-5 py-20">
           <p className="text-xs uppercase tracking-[0.28em] text-brand-gold">
-            Serviços da demonstração
+            Monetização simples
           </p>
           <h2 className="font-display mt-3 text-5xl text-white sm:text-6xl">
-            Escolha o cuidado certo
+            Comece grátis. Evolua quando precisar.
           </h2>
           <p className="mt-4 max-w-2xl text-white/65">
-            Cada serviço já traz pacotes inclusos. No agendamento você confirma
-            os itens e reserva o horário ideal.
+            O plano FREE já gera valor: presença digital e agenda. Os planos
+            pagos desbloqueiam operação e crescimento.
           </p>
 
-          <div className="mt-12 grid gap-6 md:grid-cols-2">
-            {SERVICES.map((service) => (
-              <article
-                key={service.id}
-                className="group relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-gradient-to-br from-brand-blue/40 to-transparent p-7 transition hover:border-brand-gold/40"
+          <div className="mt-12 grid gap-6 lg:grid-cols-3">
+            <article className="rounded-[1.75rem] border border-brand-gold/40 bg-gradient-to-b from-brand-blue/50 to-transparent p-7">
+              <p className="text-xs uppercase tracking-[0.2em] text-brand-gold">
+                FREE
+              </p>
+              <p className="mt-2 font-display text-4xl text-white">R$ 0</p>
+              <ul className="mt-6 space-y-3 text-sm text-white/75">
+                {FREE_PLAN_BULLETS.map((b) => (
+                  <li key={b} className="flex gap-2">
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-gold" />
+                    {b}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href="/onboarding"
+                className="mt-8 inline-flex rounded-full bg-brand-gold px-5 py-2.5 text-sm font-semibold text-brand-ink"
               >
-                <p className="text-xs uppercase tracking-[0.2em] text-brand-gold">
-                  a partir de {formatBRL(service.priceFrom)} ·{" "}
-                  {service.durationHours}h
+                Criar conta FREE
+              </Link>
+            </article>
+
+            {PAID_PLAN_TEASERS.map((p) => (
+              <article
+                key={p.plan}
+                className="rounded-[1.75rem] border border-white/10 bg-black/20 p-7"
+              >
+                <p className="text-xs uppercase tracking-[0.2em] text-white/45">
+                  {p.plan}
                 </p>
-                <h3 className="mt-3 text-2xl font-semibold text-white">
-                  {service.name}
-                </h3>
-                <p className="mt-2 text-white/70">{service.tagline}</p>
-                <ul className="mt-5 space-y-2">
-                  {service.packages
-                    .filter((p) => p.included)
-                    .map((pkg) => (
-                      <li
-                        key={pkg.id}
-                        className="flex items-start gap-2 text-sm text-white/75"
-                      >
-                        <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-gold" />
-                        {pkg.name}
-                      </li>
-                    ))}
+                <p className="mt-2 font-display text-4xl text-white">
+                  {p.price}
+                </p>
+                <ul className="mt-6 space-y-3 text-sm text-white/70">
+                  {p.items.map((item) => (
+                    <li key={item} className="flex gap-2">
+                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-white/40" />
+                      {item}
+                    </li>
+                  ))}
                 </ul>
-                <Link
-                  href={`/agendar?servico=${service.id}`}
-                  className="mt-7 inline-flex text-sm font-semibold text-brand-gold transition group-hover:text-brand-gold-soft"
-                >
-                  Agendar este serviço →
-                </Link>
+                <p className="mt-8 text-xs text-white/40">
+                  Upgrade pelo painel quando a operação pedir.
+                </p>
               </article>
             ))}
           </div>
         </section>
 
         <section className="relative overflow-hidden border-t border-white/10">
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                "linear-gradient(120deg, #0b2a8f 0%, #061a5c 55%, #050914 100%)",
-            }}
+          <Image
+            src="/hero/hero-shop.jpg"
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover opacity-30"
           />
+          <div className="absolute inset-0 bg-gradient-to-r from-brand-blue/90 to-[#050914]/95" />
           <div className="relative mx-auto flex max-w-6xl flex-col items-start gap-6 px-5 py-20 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="font-display text-5xl text-white sm:text-6xl">
-                Pronto para brilhar?
+              <h2 className="font-display text-5xl text-white">
+                Sua estética online em minutos
               </h2>
               <p className="mt-3 max-w-lg text-white/75">
-                Reserve em minutos pelo site. Na estética real do seu cliente,
-                a equipe prepara tudo para o veículo.
+                Sem cartão no FREE. Cadastre, compartilhe o link do site e
+                receba o primeiro agendamento.
               </p>
             </div>
             <Link
-              href="/agendar"
-              className="rounded-full bg-brand-gold px-8 py-4 text-sm font-bold uppercase tracking-wide text-brand-ink hover:bg-brand-gold-soft"
+              href="/onboarding"
+              className="rounded-full bg-brand-gold px-8 py-4 text-sm font-bold uppercase tracking-wide text-brand-ink"
             >
-              Ir para agendamento
+              Começar agora
             </Link>
           </div>
         </section>
       </main>
 
-      <SiteFooter />
+      <PlatformFooter />
     </div>
   );
 }

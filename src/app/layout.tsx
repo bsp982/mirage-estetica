@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Bebas_Neue, Manrope } from "next/font/google";
 import "./globals.css";
+import { PLATFORM } from "@/lib/platform";
 
 const display = Bebas_Neue({
   weight: "400",
@@ -14,9 +15,8 @@ const body = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "Estética MVP | Agendamento online",
-  description:
-    "Demonstração do sistema de agendamento para estéticas automotivas: serviços, pacotes, horários e painel do gestor.",
+  title: `${PLATFORM.name} | Site e agendamento para estéticas`,
+  description: PLATFORM.description,
 };
 
 export default function RootLayout({
