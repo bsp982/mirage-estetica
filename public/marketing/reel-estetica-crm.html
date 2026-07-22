@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Reel · Estética CRM</title>
+    <style>
+      :root {
+        --ink: #050914;
+        --blue: #0b2a8f;
+        --gold: #e0b12a;
+        --gold-soft: #f0d078;
+        --white: #f7f4ec;
+        --muted: rgba(247, 244, 236, 0.72);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        height: 100%;
+        background: #111;
+        color: var(--white);
+        font-family: "Segoe UI", system-ui, sans-serif;
+      }
+
+      .stage {
+        min-height: 100%;
+        display: grid;
+        place-items: center;
+        padding: 16px;
+        gap: 16px;
+      }
+
+      .phone {
+        width: min(390px, 92vw);
+        aspect-ratio: 9 / 16;
+        border-radius: 28px;
+        overflow: hidden;
+        position: relative;
+        background: var(--ink);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+      }
+
+      .scene {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        align-content: end;
+        padding: 48px 28px 72px;
+        opacity: 0;
+        transform: scale(1.04);
+        transition:
+          opacity 0.45s ease,
+          transform 0.55s ease;
+        pointer-events: none;
+        background:
+          radial-gradient(ellipse at 30% 0%, #0b2a8f 0%, transparent 55%),
+          radial-gradient(ellipse at 80% 100%, #1a1830 0%, transparent 50%),
+          var(--ink);
+      }
+
+      .scene.active {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      .eyebrow {
+        font-size: 12px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: 14px;
+        font-weight: 600;
+      }
+
+      h1 {
+        font-size: clamp(28px, 8vw, 40px);
+        line-height: 1.05;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        max-width: 12ch;
+      }
+
+      p {
+        margin-top: 14px;
+        font-size: 16px;
+        line-height: 1.4;
+        color: var(--muted);
+        max-width: 24ch;
+      }
+
+      .cta {
+        margin-top: 22px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--gold);
+        color: var(--ink);
+        font-weight: 700;
+        font-size: 14px;
+        padding: 12px 18px;
+        border-radius: 999px;
+      }
+
+      .brand {
+        position: absolute;
+        top: 28px;
+        left: 28px;
+        right: 28px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 2;
+        font-size: 12px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(247, 244, 236, 0.8);
+      }
+
+      .brand strong {
+        color: var(--gold-soft);
+        letter-spacing: 0.08em;
+      }
+
+      .mock {
+        position: absolute;
+        top: 88px;
+        left: 28px;
+        right: 28px;
+        height: 42%;
+        border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.04);
+        padding: 14px;
+        display: grid;
+        gap: 10px;
+      }
+
+      .row {
+        height: 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.12);
+      }
+
+      .row.short {
+        width: 55%;
+      }
+
+      .chip {
+        justify-self: start;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(224, 177, 42, 0.18);
+        color: var(--gold-soft);
+        font-size: 11px;
+        font-weight: 600;
+      }
+
+      .card {
+        margin-top: auto;
+        border-radius: 14px;
+        padding: 12px;
+        background: rgba(11, 42, 143, 0.45);
+        border: 1px solid rgba(224, 177, 42, 0.35);
+        font-size: 13px;
+      }
+
+      .progress {
+        position: absolute;
+        top: 12px;
+        left: 16px;
+        right: 16px;
+        display: flex;
+        gap: 4px;
+        z-index: 3;
+      }
+
+      .progress span {
+        flex: 1;
+        height: 3px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.18);
+        overflow: hidden;
+      }
+
+      .progress span i {
+        display: block;
+        height: 100%;
+        width: 0%;
+        background: var(--gold);
+      }
+
+      .progress span.done i {
+        width: 100%;
+      }
+
+      .progress span.current i {
+        animation: fill linear forwards;
+      }
+
+      @keyframes fill {
+        from {
+          width: 0%;
+        }
+        to {
+          width: 100%;
+        }
+      }
+
+      .controls {
+        width: min(390px, 92vw);
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      button {
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: #1a1a1a;
+        color: #fff;
+        border-radius: 999px;
+        padding: 10px 14px;
+        font-size: 13px;
+        cursor: pointer;
+      }
+
+      button.primary {
+        background: var(--gold);
+        color: var(--ink);
+        border-color: transparent;
+        font-weight: 700;
+      }
+
+      .hint {
+        width: min(390px, 92vw);
+        color: #aaa;
+        font-size: 13px;
+        line-height: 1.45;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="stage">
+      <div class="phone" id="phone" aria-label="Prévia do Reel 9:16">
+        <div class="progress" id="progress"></div>
+        <div class="brand">
+          <strong>Estética CRM</strong>
+          <span>Reel 01</span>
+        </div>
+
+        <section class="scene active" data-ms="3500">
+          <p class="eyebrow">Pergunta</p>
+          <h1>Ainda agenda pelo WhatsApp?</h1>
+          <p>Mensagens se perdem. Cliente some. Você perde serviço.</p>
+        </section>
+
+        <section class="scene" data-ms="4000">
+          <div class="mock" aria-hidden="true">
+            <div class="chip">Agenda do dia</div>
+            <div class="row"></div>
+            <div class="row short"></div>
+            <div class="card">14:00 · Polimento completo · Confirmado</div>
+          </div>
+          <p class="eyebrow">Solução</p>
+          <h1>Seu cliente agenda sozinho</h1>
+          <p>Site + agenda + CRM em um link.</p>
+        </section>
+
+        <section class="scene" data-ms="4000">
+          <div class="mock" aria-hidden="true">
+            <div class="chip">Planos</div>
+            <div class="card">FREE · Site e agenda</div>
+            <div class="card">PRO · R$ 97/mês · Financeiro</div>
+            <div class="card">PREMIUM · R$ 197/mês · Indicações</div>
+          </div>
+          <p class="eyebrow">Comece hoje</p>
+          <h1>Teste grátis em minutos</h1>
+          <p>Sem cartão no FREE. Upgrade quando quiser.</p>
+        </section>
+
+        <section class="scene" data-ms="3800">
+          <p class="eyebrow">CTA</p>
+          <h1>Link na bio</h1>
+          <p>estetica-automotiva-crm.vercel.app</p>
+          <div class="cta">Criar minha estética →</div>
+        </section>
+      </div>
+
+      <div class="controls">
+        <button class="primary" id="play" type="button">Reproduzir</button>
+        <button id="restart" type="button">Reiniciar</button>
+        <button id="fullscreen" type="button">Tela cheia (gravar)</button>
+      </div>
+      <p class="hint">
+        Para usar no Instagram: clique em <strong>Tela cheia</strong>, grave a
+        tela (OBS / Gravador do celular / QuickTime) em proporção 9:16 e poste
+        como Reel ou Story. Duração total ≈ 15s.
+      </p>
+    </div>
+
+    <script>
+      const scenes = [...document.querySelectorAll(".scene")];
+      const progress = document.getElementById("progress");
+      let timer = null;
+      let index = 0;
+      let playing = false;
+
+      progress.innerHTML = scenes
+        .map(() => "<span><i></i></span>")
+        .join("");
+
+      const bars = [...progress.querySelectorAll("span")];
+
+      function show(i) {
+        index = i;
+        scenes.forEach((s, n) => s.classList.toggle("active", n === i));
+        bars.forEach((b, n) => {
+          b.classList.remove("done", "current");
+          const fill = b.querySelector("i");
+          fill.style.animation = "none";
+          fill.style.width = n < i ? "100%" : "0%";
+          if (n < i) b.classList.add("done");
+        });
+      }
+
+      function playFrom(start = 0) {
+        clearTimeout(timer);
+        playing = true;
+        show(start);
+        const bar = bars[start];
+        const fill = bar.querySelector("i");
+        const ms = Number(scenes[start].dataset.ms || 3500);
+        bar.classList.add("current");
+        fill.style.animation = `fill ${ms}ms linear forwards`;
+        timer = setTimeout(() => {
+          if (start + 1 < scenes.length) playFrom(start + 1);
+          else {
+            playing = false;
+            bars[start].classList.remove("current");
+            bars[start].classList.add("done");
+          }
+        }, ms);
+      }
+
+      document.getElementById("play").onclick = () => playFrom(index);
+      document.getElementById("restart").onclick = () => playFrom(0);
+      document.getElementById("fullscreen").onclick = async () => {
+        const el = document.getElementById("phone");
+        if (el.requestFullscreen) await el.requestFullscreen();
+        playFrom(0);
+      };
+
+      playFrom(0);
+    </script>
+  </body>
+</html>
