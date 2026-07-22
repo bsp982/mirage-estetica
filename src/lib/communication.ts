@@ -1,5 +1,7 @@
 import { prisma } from "./db";
 import { hasFeature } from "./features";
+import { sendEmail } from "./email";
+import { gestorLoginUrl, tenantSiteUrl } from "./app-url";
 import type { AppointmentStatus } from "./types";
 
 type Channel = "EMAIL" | "WHATSAPP" | "LOG";
@@ -13,14 +15,18 @@ async function deliver(input: {
   recipient: string;
   subject?: string;
   body: string;
+  html?: string;
 }) {
-  // MVP: persiste log; e-mail/WhatsApp reais quando env estiver configurado
   let status = "LOGGED";
 
-  if (input.channel === "EMAIL" && process.env.SMTP_HOST) {
-    // Placeholder — integração SMTP na Fase 3 (sem SDK obrigatório ainda)
-    status = "QUEUED_EMAIL";
-    console.info("[email]", input.recipient, input.subject, input.body.slice(0, 120));
+  if (input.channel === "EMAIL") {
+    const result = await sendEmail({
+      to: input.recipient,
+      subject: input.subject || "Estética CRM",
+      text: input.body,
+      html: input.html || `<pre style="font-family:sans-serif">${input.body}</pre>`,
+    });
+    status = result.ok ? "SENT" : `FAILED:${result.reason}`;
   }
 
   if (input.channel === "WHATSAPP" && process.env.WHATSAPP_API_TOKEN) {
@@ -28,8 +34,13 @@ async function deliver(input: {
     console.info("[whatsapp]", input.recipient, input.body.slice(0, 120));
   }
 
-  if (!process.env.SMTP_HOST && !process.env.WHATSAPP_API_TOKEN) {
-    console.info("[communication]", input.template, input.recipient, input.body.slice(0, 160));
+  if (input.channel === "LOG") {
+    console.info(
+      "[communication]",
+      input.template,
+      input.recipient,
+      input.body.slice(0, 160),
+    );
   }
 
   await prisma.communicationLog.create({
@@ -45,6 +56,82 @@ async function deliver(input: {
       status,
     },
   });
+
+  return status;
+}
+
+/** E-mail de boas-vindas após cadastro FREE/onboarding. */
+export async function sendOnboardingWelcomeEmail(input: {
+  companyId: string;
+  companyName: string;
+  slug: string;
+  adminName: string;
+  adminEmail: string;
+}): Promise<{ sent: boolean; status: string }> {
+  const siteUrl = tenantSiteUrl(input.slug);
+  const gestorUrl = gestorLoginUrl();
+
+  const subject = `${input.companyName} está no ar — seus links Estética CRM`;
+  const text = [
+    `Olá, ${input.adminName}!`,
+    "",
+    `Sua estética "${input.companyName}" foi criada com sucesso no plano FREE.`,
+    "",
+    "Envie este link aos seus clientes para agendar:",
+    siteUrl,
+    "",
+    "Acesse o painel do gestor para acompanhar a agenda:",
+    gestorUrl,
+    "",
+    `Login: ${input.adminEmail}`,
+    "",
+    "Bom atendimento!",
+    "Equipe Estética CRM",
+  ].join("\n");
+
+  const html = `
+  <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;color:#111;line-height:1.5">
+    <h1 style="font-size:22px;margin:0 0 12px">Olá, ${escapeHtml(input.adminName)}!</h1>
+    <p style="margin:0 0 16px">
+      Sua estética <strong>${escapeHtml(input.companyName)}</strong> foi criada com sucesso no plano FREE.
+    </p>
+    <div style="border:1px solid #e5e5e5;border-radius:12px;padding:16px;margin:0 0 16px;background:#fafafa">
+      <p style="margin:0 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:#666">
+        Site para seus clientes agendarem
+      </p>
+      <p style="margin:0 0 12px">
+        <a href="${siteUrl}" style="color:#0b2a8f;font-weight:600">${siteUrl}</a>
+      </p>
+      <p style="margin:0 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:#666">
+        Painel do gestor (acompanhar agenda)
+      </p>
+      <p style="margin:0">
+        <a href="${gestorUrl}" style="color:#0b2a8f;font-weight:600">${gestorUrl}</a>
+      </p>
+    </div>
+    <p style="margin:0 0 8px">Login: <strong>${escapeHtml(input.adminEmail)}</strong></p>
+    <p style="margin:0;color:#666;font-size:14px">Bom atendimento!<br/>Equipe Estética CRM</p>
+  </div>`;
+
+  const status = await deliver({
+    companyId: input.companyId,
+    channel: "EMAIL",
+    template: "ONBOARDING_WELCOME",
+    recipient: input.adminEmail,
+    subject,
+    body: text,
+    html,
+  });
+
+  return { sent: status === "SENT", status };
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
 }
 
 export async function notifyAppointmentCreated(appointmentId: string) {

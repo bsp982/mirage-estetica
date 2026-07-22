@@ -10,8 +10,11 @@ import { normalizePhone } from "@/lib/phone";
 
 type Success = {
   sitePath: string;
+  siteUrl: string;
+  gestorUrl: string;
   email: string;
   companyName: string;
+  emailSent: boolean;
 };
 
 type FieldErrors = Partial<
@@ -144,6 +147,9 @@ export default function OnboardingPage() {
       const data = await readApiJson<{
         error?: string;
         sitePath?: string;
+        siteUrl?: string;
+        gestorUrl?: string;
+        emailSent?: boolean;
         company?: { name: string };
       }>(res);
       if (!res.ok) {
@@ -152,10 +158,15 @@ export default function OnboardingPage() {
       if (!data.sitePath || !data.company?.name) {
         throw new Error("Cadastro incompleto. Tente novamente.");
       }
+      const origin =
+        typeof window !== "undefined" ? window.location.origin : "";
       setSuccess({
         sitePath: data.sitePath,
+        siteUrl: data.siteUrl || `${origin}${data.sitePath}`,
+        gestorUrl: data.gestorUrl || `${origin}/gestor/login`,
         email: adminEmail.trim(),
         companyName: data.company.name,
+        emailSent: Boolean(data.emailSent),
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Falha no cadastro");
@@ -185,17 +196,44 @@ export default function OnboardingPage() {
               Seu plano FREE já está ativo. Compartilhe o site com clientes e
               entre no painel para acompanhar a agenda.
             </p>
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white/80">
-              <p>
-                Site:{" "}
-                <Link
-                  href={success.sitePath}
-                  className="text-brand-gold hover:underline"
-                >
-                  {success.sitePath}
-                </Link>
+            {success.emailSent ? (
+              <p className="rounded-xl border border-brand-gold/30 bg-brand-gold/10 px-3 py-2 text-sm text-brand-gold">
+                Enviamos um e-mail para {success.email} com os dois links.
               </p>
-              <p className="mt-2">Login: {success.email}</p>
+            ) : (
+              <p className="rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm text-white/65">
+                Guarde os links abaixo. O e-mail de boas-vindas será enviado
+                quando o provedor de e-mail estiver configurado.
+              </p>
+            )}
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white/80 space-y-3">
+              <div>
+                <p className="text-xs uppercase tracking-[0.18em] text-brand-gold">
+                  Site para clientes agendarem
+                </p>
+                <a
+                  href={success.siteUrl}
+                  className="mt-1 block break-all text-brand-gold hover:underline"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {success.siteUrl}
+                </a>
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-[0.18em] text-brand-gold">
+                  Painel do gestor
+                </p>
+                <a
+                  href={success.gestorUrl}
+                  className="mt-1 block break-all text-brand-gold hover:underline"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {success.gestorUrl}
+                </a>
+              </div>
+              <p className="pt-1">Login: {success.email}</p>
             </div>
             <div className="flex flex-wrap gap-3">
               <Link

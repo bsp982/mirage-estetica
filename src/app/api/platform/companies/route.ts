@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getSession, hashPassword } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { sendOnboardingWelcomeEmail } from "@/lib/communication";
+import { gestorLoginUrl, tenantSiteUrl } from "@/lib/app-url";
 import { z } from "zod";
 
 /** Super-admin da plataforma (role PLATFORM) ou onboarding público FREE. */
@@ -176,11 +178,32 @@ export async function POST(request: Request) {
       },
     });
 
+    const sitePath = `/s/${company.slug}`;
+    const siteUrl = tenantSiteUrl(company.slug);
+    const gestorUrl = gestorLoginUrl();
+
+    let emailSent = false;
+    try {
+      const mail = await sendOnboardingWelcomeEmail({
+        companyId: company.id,
+        companyName: company.name,
+        slug: company.slug,
+        adminName: body.adminName.trim(),
+        adminEmail: body.adminEmail.toLowerCase(),
+      });
+      emailSent = mail.sent;
+    } catch (mailError) {
+      console.error("[onboarding:email]", mailError);
+    }
+
     return NextResponse.json(
       {
         company: { id: company.id, slug: company.slug, name: company.name },
-        sitePath: `/s/${company.slug}`,
+        sitePath,
+        siteUrl,
+        gestorUrl,
         loginPath: "/gestor/login",
+        emailSent,
       },
       { status: 201 },
     );
