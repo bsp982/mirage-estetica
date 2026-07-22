@@ -1,0 +1,438 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Company {
+  id                 String   @id @default(cuid())
+  name               String
+  slug               String   @unique
+  planId             String?
+  subscriptionStatus String   @default("ACTIVE")
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  plan                  Plan?                   @relation(fields: [planId], references: [id])
+  users                 User[]
+  settings              CompanySettings?
+  customers             Customer[]
+  vehicles              Vehicle[]
+  services              Service[]
+  appointments          Appointment[]
+  financialTransactions FinancialTransaction[]
+  referrals             Referral[]
+  credits               CustomerCredit[]
+  coupons               Coupon[]
+  loyaltyPoints         LoyaltyPoint[]
+  communications        CommunicationLog[]
+  galleryItems          GalleryItem[]
+  testimonials          Testimonial[]
+  domains               CompanyDomain[]
+  subscriptions         Subscription[]
+  googleEvents          GoogleCalendarEvent[]
+}
+
+model User {
+  id           String   @id @default(cuid())
+  companyId    String
+  email        String
+  name         String
+  passwordHash String
+  role         String   @default("MANAGER")
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, email])
+  @@index([companyId])
+}
+
+model CompanySettings {
+  id               String  @id @default(cuid())
+  companyId        String  @unique
+  logoUrl          String?
+  faviconUrl       String?
+  primaryColor     String  @default("#0b2a8f")
+  secondaryColor   String  @default("#e0b12a")
+  fontFamily       String?
+  heroImageUrl     String?
+  heroVideoUrl     String?
+  heroStyle        String  @default("IMAGE")
+  theme            String  @default("DARK")
+  description      String?
+  about            String?
+  address          String?
+  phone            String?
+  whatsapp         String?
+  instagram        String?
+  hoursLabel       String?
+  motto            String?
+  showTestimonials Boolean @default(true)
+  showGallery      Boolean @default(true)
+  showAbout        Boolean @default(true)
+  showServices     Boolean @default(true)
+  showCta          Boolean @default(true)
+  showContact      Boolean @default(true)
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+model Customer {
+  id        String    @id @default(cuid())
+  companyId String
+  name      String
+  document  String?
+  phone     String
+  whatsapp  String?
+  email     String?
+  birthDate DateTime?
+  address   String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  company       Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  vehicles      Vehicle[]
+  appointments  Appointment[]
+  credits       CustomerCredit[]
+  referralsMade Referral[]       @relation("Referrer")
+  referralsGot  Referral[]       @relation("Referred")
+  coupons       Coupon[]
+  loyaltyPoints LoyaltyPoint[]
+
+  @@unique([companyId, phone])
+  @@index([companyId])
+  @@index([companyId, name])
+}
+
+model Vehicle {
+  id         String   @id @default(cuid())
+  companyId  String
+  customerId String
+  brand      String
+  model      String
+  year       Int?
+  color      String?
+  plate      String?
+  notes      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  company      Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customer     Customer      @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  appointments Appointment[]
+
+  @@index([companyId])
+  @@index([customerId])
+  @@index([companyId, plate])
+}
+
+model Service {
+  id            String   @id @default(cuid())
+  companyId     String
+  slug          String
+  name          String
+  tagline       String?
+  description   String
+  durationHours Float
+  priceFrom     Float
+  category      String?
+  imageUrl      String?
+  active        Boolean  @default(true)
+  sortOrder     Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  company      Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  packages     ServicePackage[]
+  appointments Appointment[]
+  referrals    Referral[]
+  galleryItems GalleryItem[]
+
+  @@unique([companyId, slug])
+  @@index([companyId, active])
+}
+
+model ServicePackage {
+  id          String  @id @default(cuid())
+  serviceId   String
+  slug        String
+  name        String
+  description String
+  included    Boolean @default(false)
+  sortOrder   Int     @default(0)
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@unique([serviceId, slug])
+}
+
+model Appointment {
+  id             String   @id @default(cuid())
+  companyId      String
+  customerId     String
+  vehicleId      String?
+  serviceId      String
+  packageIdsJson String   @default("[]")
+  date           String
+  time           String
+  scheduledAt    DateTime
+  estimatedEndAt DateTime
+  status         String   @default("AGENDADO")
+  price          Float?
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  company               Company                @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customer              Customer               @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  vehicle               Vehicle?               @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+  service               Service                @relation(fields: [serviceId], references: [id])
+  financialTransactions FinancialTransaction[]
+  googleEvent           GoogleCalendarEvent?
+  communications        CommunicationLog[]
+
+  @@index([companyId, date])
+  @@index([companyId, status])
+  @@index([customerId])
+  @@index([scheduledAt])
+}
+
+model FinancialTransaction {
+  id            String   @id @default(cuid())
+  companyId     String
+  type          String
+  category      String
+  description   String
+  amount        Float
+  date          DateTime
+  appointmentId String?
+  createdAt     DateTime @default(now())
+
+  company     Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  appointment Appointment? @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
+
+  @@index([companyId, date])
+  @@index([companyId, type])
+}
+
+model Referral {
+  id                 String    @id @default(cuid())
+  companyId          String
+  referrerCustomerId String
+  referredCustomerId String
+  serviceId          String?
+  appointmentId      String?
+  referrerReward     Float     @default(5)
+  referredReward     Float     @default(10)
+  status             String    @default("PENDING")
+  createdAt          DateTime  @default(now())
+  processedAt        DateTime?
+
+  company  Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  referrer Customer @relation("Referrer", fields: [referrerCustomerId], references: [id], onDelete: Cascade)
+  referred Customer @relation("Referred", fields: [referredCustomerId], references: [id], onDelete: Cascade)
+  service  Service? @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+
+  @@unique([companyId, referredCustomerId])
+  @@index([companyId, status])
+}
+
+model CustomerCredit {
+  id         String   @id @default(cuid())
+  companyId  String
+  customerId String
+  amount     Float
+  balance    Float
+  reason     String
+  referralId String?
+  createdAt  DateTime @default(now())
+
+  company  Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, customerId])
+}
+
+model Coupon {
+  id          String    @id @default(cuid())
+  companyId   String
+  customerId  String?
+  code        String
+  description String?
+  discountPct Float?
+  discountAmt Float?
+  expiresAt   DateTime?
+  usedAt      DateTime?
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+
+  company  Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  @@unique([companyId, code])
+  @@index([companyId])
+}
+
+model LoyaltyPoint {
+  id         String   @id @default(cuid())
+  companyId  String
+  customerId String
+  points     Int
+  reason     String
+  createdAt  DateTime @default(now())
+
+  company  Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, customerId])
+}
+
+model CommunicationLog {
+  id            String   @id @default(cuid())
+  companyId     String
+  appointmentId String?
+  customerId    String?
+  channel       String
+  template      String
+  recipient     String
+  subject       String?
+  body          String
+  status        String   @default("SENT")
+  createdAt     DateTime @default(now())
+
+  company     Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  appointment Appointment? @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
+
+  @@index([companyId, createdAt])
+}
+
+model GoogleCalendarEvent {
+  id            String   @id @default(cuid())
+  appointmentId String   @unique
+  companyId     String
+  googleEventId String
+  calendarId    String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  company     Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+model GalleryItem {
+  id           String    @id @default(cuid())
+  companyId    String
+  serviceId    String?
+  beforeUrl    String
+  afterUrl     String
+  description  String?
+  vehicleLabel String?
+  date         DateTime?
+  sortOrder    Int       @default(0)
+  active       Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+
+  company Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  service Service? @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+
+  @@index([companyId, active])
+}
+
+model Testimonial {
+  id           String   @id @default(cuid())
+  companyId    String
+  customerName  String
+  rating       Int      @default(5)
+  comment      String
+  date         DateTime @default(now())
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, active])
+}
+
+model CompanyDomain {
+  id        String   @id @default(cuid())
+  companyId String
+  domain    String   @unique
+  active    Boolean  @default(true)
+  verified  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+}
+
+model Plan {
+  id            String  @id @default(cuid())
+  code          String  @unique
+  name          String
+  price         Float   @default(0)
+  billingPeriod String  @default("MONTHLY")
+  active        Boolean @default(true)
+  sortOrder     Int     @default(0)
+
+  features      PlanFeature[]
+  companies     Company[]
+  subscriptions Subscription[]
+}
+
+model Feature {
+  id          String @id @default(cuid())
+  code        String @unique
+  description String
+
+  plans PlanFeature[]
+}
+
+model PlanFeature {
+  planId    String
+  featureId String
+
+  plan    Plan    @relation(fields: [planId], references: [id], onDelete: Cascade)
+  feature Feature @relation(fields: [featureId], references: [id], onDelete: Cascade)
+
+  @@id([planId, featureId])
+}
+
+model Subscription {
+  id          String    @id @default(cuid())
+  companyId   String
+  planId      String
+  status      String    @default("ACTIVE")
+  startedAt   DateTime  @default(now())
+  expiresAt   DateTime?
+  trialEndsAt DateTime?
+  canceledAt  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  company  Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  plan     Plan      @relation(fields: [planId], references: [id])
+  invoices Invoice[]
+
+  @@index([companyId, status])
+}
+
+model Invoice {
+  id             String    @id @default(cuid())
+  subscriptionId String
+  amount         Float
+  status         String    @default("PENDING")
+  dueAt          DateTime
+  paidAt         DateTime?
+  createdAt      DateTime  @default(now())
+
+  subscription Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  @@index([subscriptionId])
+}
