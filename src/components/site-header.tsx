@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BUSINESS } from "@/lib/services";
+import { BUSINESS } from "@/lib/brand";
 
 export function SiteHeader({ solid = false }: { solid?: boolean }) {
   return (
