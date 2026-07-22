@@ -1,0 +1,13 @@
+.env
+.env.*
+!.env.example
+.agents
+.claude
+.cursor
+.windsurf
+node_modules
+.next
+data
+public/uploads
+*.md
+!README.md
